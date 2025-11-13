@@ -41,7 +41,59 @@ int main(int argc, char ** argv)
   try {
     parsov::check_args(argc);
     const size_t mode = parsov::get_mode(argv[1]);
-    (void)mode;
+
+    std::ifstream in(argv[2]);
+    if(!in) {
+      throw std::runtime_error("Cannot open input file\n");
+    }
+
+    size_t n = 0;
+    size_t m = 0;
+
+    parsov::read_hdr(in, n, m);
+
+    if(n * m > parsov::MAX_STATIC && mode == 1) {
+      throw std::runtime_error("Static buffer overflow\n");
+    }
+
+    int static_buf[parsov::MAX_STATIC] = {};
+    int * data = nullptr;
+
+    if(mode == 1) {
+      data = static_buf;
+      parsov::read_mtx_static(in, data, n, m);
+    }else {
+      data = static_cast<int *>(std::malloc(n * m * sizeof(int)));
+      if(!data) {
+        throw std::runtime_error("Memory allocation failed\n");
+      }
+      parsov::read_mtx_dyn(in, data, n, m);
+    }
+
+    in.close();
+
+    // По твоему варианту: LFT-TOP-CLK и LFT-BOT-CNT
+    if(mode == 1) {
+      parsov::lft_top_clk(data, n, m);
+    }else {
+      parsov::lft_bot_cnt(data, n, m);
+    }
+
+    std::ofstream out(argv[3]);
+    if(!out) {
+      if(mode == 2) {
+        std::free(data);
+      }
+      throw std::runtime_error("Cannot open output file\n");
+    }
+
+    parsov::write_mtx(out, data, n, m);
+    out << "\n";
+
+    if(mode == 2) {
+      std::free(data);
+    }
+
     return 0;
   }catch(std::runtime_error & e) {
     std::cerr << e.what();
