@@ -38,10 +38,13 @@ namespace parsov
 
 int main(int argc, char ** argv)
 {
+  int * data = nullptr;
+  size_t mode = 0;
+
   try {
     parsov::check_args(argc);
 
-    const size_t mode = parsov::get_mode(argv[1]);
+    mode = parsov::get_mode(argv[1]);
 
     std::ifstream in(argv[2]);
     if(!in) {
@@ -50,11 +53,16 @@ int main(int argc, char ** argv)
 
     size_t n = 0;
     size_t m = 0;
-
     parsov::read_hdr(in, n, m);
 
+    // ✔ ПУСТАЯ МАТРИЦА — НЕ ОШИБКА
     if(n == 0 || m == 0) {
-      throw std::runtime_error("Matrix cannot be empty\n");
+      std::ofstream out(argv[3]);
+      if(!out) {
+        throw std::runtime_error("Cannot open output file\n");
+      }
+      out << "0 0\n";
+      return 0;
     }
 
     if(mode == 1 && n * m > parsov::MAX_STATIC) {
@@ -62,12 +70,10 @@ int main(int argc, char ** argv)
     }
 
     int static_buf[parsov::MAX_STATIC] = {};
-    int * data = nullptr;
-
     if(mode == 1) {
       data = static_buf;
       parsov::read_mtx_static(in, data, n, m);
-    }else {
+    } else {
       data = static_cast<int *>(std::malloc(n * m * sizeof(int)));
       if(!data) {
         throw std::runtime_error("Memory allocation failed\n");
@@ -77,16 +83,12 @@ int main(int argc, char ** argv)
 
     in.close();
 
-    bool ok = false;
-
-    if(mode == 1) {
-      ok = parsov::lft_top_clk(data, n, m);
-    }else {
-      ok = parsov::lft_bot_cnt(data, n, m);
-    }
+    bool ok = (mode == 1 ?
+      parsov::lft_top_clk(data, n, m) :
+      parsov::lft_bot_cnt(data, n, m));
 
     if(!ok) {
-      if(mode == 2) {
+      if(mode == 2 && data) {
         std::free(data);
       }
       throw std::runtime_error("Processing error\n");
@@ -94,7 +96,7 @@ int main(int argc, char ** argv)
 
     std::ofstream out(argv[3]);
     if(!out) {
-      if(mode == 2) {
+      if(mode == 2 && data) {
         std::free(data);
       }
       throw std::runtime_error("Cannot open output file\n");
@@ -103,16 +105,23 @@ int main(int argc, char ** argv)
     parsov::write_mtx(out, data, n, m);
     out << "\n";
 
-    if(mode == 2) {
+    if(mode == 2 && data) {
       std::free(data);
     }
 
     return 0;
-  }catch(std::runtime_error & e) {
+
+  } catch(std::runtime_error & e) {
     std::cerr << e.what();
+    if(mode == 2 && data) {
+      std::free(data);
+    }
     return 1;
-  }catch(...) {
+  } catch(...) {
     std::cerr << "Unknown error\n";
+    if(mode == 2 && data) {
+      std::free(data);
+    }
     return 1;
   }
 }
@@ -121,7 +130,7 @@ void parsov::check_args(int argc)
 {
   if(argc < 4) {
     throw std::runtime_error("Not enough arguments\n");
-  }else if(argc > 4) {
+  } else if(argc > 4) {
     throw std::runtime_error("Too many arguments\n");
   }
 }
@@ -248,27 +257,27 @@ bool parsov::spiral_mod(int * data,
 
   size_t r = sr;
   size_t c = sc;
-  size_t count = 0;
+  size_t cnt = 0;
   int step = 1;
-  int dir = 0;
+  int d = 0;
 
-  while(count < side * side) {
+  while(cnt < side * side) {
     used[r * side + c] = true;
     data[r * cols + c] += sign * step;
     ++step;
-    ++count;
+    ++cnt;
 
-    if(count == side * side) {
+    if(cnt == side * side) {
       break;
     }
 
-    size_t nr = static_cast<size_t>(static_cast<int>(r) + dr[dir]);
-    size_t nc = static_cast<size_t>(static_cast<int>(c) + dc[dir]);
+    size_t nr = static_cast<size_t>(static_cast<int>(r) + dr[d]);
+    size_t nc = static_cast<size_t>(static_cast<int>(c) + dc[d]);
 
     if(nr >= side || nc >= side || used[nr * side + nc]) {
-      dir = (dir + 1) % 4;
-      nr = static_cast<size_t>(static_cast<int>(r) + dr[dir]);
-      nc = static_cast<size_t>(static_cast<int>(c) + dc[dir]);
+      d = (d + 1) % 4;
+      nr = static_cast<size_t>(static_cast<int>(r) + dr[d]);
+      nc = static_cast<size_t>(static_cast<int>(c) + dc[d]);
     }
 
     r = nr;
@@ -283,10 +292,6 @@ bool parsov::lft_top_clk(int * data, size_t n, size_t m)
 {
   const size_t side = sq_side(n, m);
 
-  if(side == 0) {
-    return true;
-  }
-
   const int dr[4] = {0, 1, 0, -1};
   const int dc[4] = {1, 0, -1, 0};
 
@@ -297,10 +302,6 @@ bool parsov::lft_bot_cnt(int * data, size_t n, size_t m)
 {
   const size_t side = sq_side(n, m);
 
-  if(side == 0) {
-    return true;
-  }
-
   const int dr[4] = {-1, 0, 1, 0};
   const int dc[4] = {0, 1, 0, -1};
 
@@ -309,4 +310,3 @@ bool parsov::lft_bot_cnt(int * data, size_t n, size_t m)
 
   return spiral_mod(data, m, side, sr, sc, dr, dc, 1);
 }
-
