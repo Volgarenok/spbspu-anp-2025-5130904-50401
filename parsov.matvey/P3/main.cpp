@@ -3,16 +3,40 @@
 
 namespace parsov
 {
-  void check_argc_validity(int argc);
-  size_t get_first_parameter(const char* num);
+  void check_args(int argc);
+  size_t get_mode(const char* num);
+
+  void read_hdr(std::istream& in, size_t& n, size_t& m);
+
+  std::istream& read_mtx_static(std::istream& in, int* buf, size_t n, size_t m);
+
+  std::istream& read_mtx_dyn(std::istream& in, int* data, size_t n, size_t m);
+
+  size_t sq_side(size_t n, size_t m);
+
+  std::ostream& write_mtx(std::ostream& out, const int* data, size_t n, size_t m);
+
+  bool spiral_mod(int* data,
+                  size_t cols,
+                  size_t side,
+                  size_t sr,
+                  size_t sc,
+                  const int dr[4],
+                  const int dc[4],
+                  int sign);
+
+  bool lft_top_clk(int* data, size_t n, size_t m);
+  bool lft_bot_cnt(int* data, size_t n, size_t m);
+
+  const size_t MAX_STATIC = 10000;
 } // namespace parsov
 
 int main(int argc, char** argv)
 {
   try
   {
-    parsov::check_argc_validity(argc);
-    size_t mode = parsov::get_first_parameter(argv[1]);
+    parsov::check_args(argc);
+    const size_t mode = parsov::get_mode(argv[1]);
     (void)mode;
     return 0;
   }
@@ -28,19 +52,19 @@ int main(int argc, char** argv)
   }
 }
 
-void parsov::check_argc_validity(int argc)
+void parsov::check_args(int argc)
 {
   if (argc < 4)
   {
     throw std::runtime_error("Not enough arguments\n");
   }
-  if (argc > 4)
+  else if (argc > 4)
   {
     throw std::runtime_error("Too many arguments\n");
   }
 }
 
-size_t parsov::get_first_parameter(const char* num)
+size_t parsov::get_mode(const char* num)
 {
   const char* p = num;
 
