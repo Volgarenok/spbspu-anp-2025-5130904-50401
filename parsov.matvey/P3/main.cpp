@@ -40,6 +40,7 @@ int main(int argc, char ** argv)
 {
   try {
     parsov::check_args(argc);
+
     const size_t mode = parsov::get_mode(argv[1]);
 
     std::ifstream in(argv[2]);
@@ -52,7 +53,11 @@ int main(int argc, char ** argv)
 
     parsov::read_hdr(in, n, m);
 
-    if(n * m > parsov::MAX_STATIC && mode == 1) {
+    if(n == 0 || m == 0) {
+      throw std::runtime_error("Matrix cannot be empty\n");
+    }
+
+    if(mode == 1 && n * m > parsov::MAX_STATIC) {
       throw std::runtime_error("Static buffer overflow\n");
     }
 
@@ -72,10 +77,20 @@ int main(int argc, char ** argv)
 
     in.close();
 
+
+    bool ok = false;
+
     if(mode == 1) {
-      parsov::lft_top_clk(data, n, m);
+      ok = parsov::lft_top_clk(data, n, m);
     }else {
-      parsov::lft_bot_cnt(data, n, m);
+      ok = parsov::lft_bot_cnt(data, n, m);
+    }
+
+    if(!ok) {
+      if(mode == 2) {
+        std::free(data);
+      }
+      throw std::runtime_error("Processing error\n");
     }
 
     std::ofstream out(argv[3]);
@@ -295,3 +310,4 @@ bool parsov::lft_bot_cnt(int * data, size_t n, size_t m)
 
   return spiral_mod(data, m, side, sr, sc, dr, dc, 1);
 }
+
