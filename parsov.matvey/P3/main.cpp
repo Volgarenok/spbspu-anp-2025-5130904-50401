@@ -7,14 +7,20 @@ namespace parsov
 {
   void check_args(int argc);
   size_t get_mode(const char * num);
+
   void read_hdr(std::istream & in, size_t & n, size_t & m);
+
   std::istream & read_mtx_static(std::istream & in, int * buf,
                                  size_t n, size_t m);
+
   std::istream & read_mtx_dyn(std::istream & in, int * data,
                               size_t n, size_t m);
+
   size_t sq_side(size_t n, size_t m);
+
   std::ostream & write_mtx(std::ostream & out, const int * data,
                            size_t n, size_t m);
+
   bool spiral_mod(int * data,
                   size_t cols,
                   size_t side,
@@ -23,8 +29,10 @@ namespace parsov
                   const int dr[4],
                   const int dc[4],
                   int sign);
+
   bool lft_top_clk(int * data, size_t n, size_t m);
   bool lft_bot_cnt(int * data, size_t n, size_t m);
+
   const size_t MAX_STATIC = 10000;
 }
 
@@ -149,4 +157,90 @@ std::ostream & parsov::write_mtx(std::ostream & out, const int * data,
   }
 
   return out;
+}
+
+bool parsov::spiral_mod(int * data,
+                        size_t cols,
+                        size_t side,
+                        size_t sr,
+                        size_t sc,
+                        const int dr[4],
+                        const int dc[4],
+                        int sign)
+{
+  if(side == 0) {
+    return true;
+  }
+
+  bool * used = static_cast<bool *>(std::malloc(side * side * sizeof(bool)));
+  if(!used) {
+    throw std::runtime_error("Memory allocation failed\n");
+  }
+
+  for(size_t i = 0; i < side * side; i++) {
+    used[i] = false;
+  }
+
+  size_t r = sr;
+  size_t c = sc;
+  size_t count = 0;
+  int step = 1;
+  int dir = 0;
+
+  while(count < side * side) {
+    used[r * side + c] = true;
+    data[r * cols + c] += sign * step;
+    ++step;
+    ++count;
+
+    if(count == side * side) {
+      break;
+    }
+
+    size_t nr = static_cast<size_t>(static_cast<int>(r) + dr[dir]);
+    size_t nc = static_cast<size_t>(static_cast<int>(c) + dc[dir]);
+
+    if(nr >= side || nc >= side || used[nr * side + nc]) {
+      dir = (dir + 1) % 4;
+      nr = static_cast<size_t>(static_cast<int>(r) + dr[dir]);
+      nc = static_cast<size_t>(static_cast<int>(c) + dc[dir]);
+    }
+
+    r = nr;
+    c = nc;
+  }
+
+  std::free(used);
+  return true;
+}
+
+bool parsov::lft_top_clk(int * data, size_t n, size_t m)
+{
+  const size_t side = sq_side(n, m);
+
+  if(side == 0) {
+    return true;
+  }
+
+  const int dr[4] = {0, 1, 0, -1};
+  const int dc[4] = {1, 0, -1, 0};
+
+  return spiral_mod(data, m, side, 0, 0, dr, dc, -1);
+}
+
+bool parsov::lft_bot_cnt(int * data, size_t n, size_t m)
+{
+  const size_t side = sq_side(n, m);
+
+  if(side == 0) {
+    return true;
+  }
+
+  const int dr[4] = {-1, 0, 1, 0};
+  const int dc[4] = {0, 1, 0, -1};
+
+  const size_t sr = side - 1;
+  const size_t sc = 0;
+
+  return spiral_mod(data, m, side, sr, sc, dr, dc, 1);
 }
