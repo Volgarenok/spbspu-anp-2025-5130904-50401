@@ -65,7 +65,7 @@ namespace kondrat
       {
         break;
       }
-      if (pos + 1 >= size)
+      if (pos >= size - 1)
       {
         char * bigger = expand_str(buffer, pos, size);
         if (!bigger)
@@ -74,7 +74,6 @@ namespace kondrat
           return nullptr;
         }
         buffer = bigger;
-        size += 5;
       }
       buffer[pos++] = static_cast< char >(ch);
     }
@@ -98,8 +97,9 @@ namespace kondrat
     return len;
   }
 
-  char * uni_two(char * first_str, const char * second_str, char * out)
+  void uni_two(const char * first_str, const char * second_str, char * out)
   {
+    if (!first_str || !second_str || !out) return;
     size_t i = 0;
     size_t j = 0;
     size_t k = 0;
@@ -116,11 +116,11 @@ namespace kondrat
       }
     }
     out[k] = '\0';
-    return out;
   }
 
-  size_t dif_lat(char * str, int * used_abc)
+  size_t dif_lat(const char * str, int * used_abc)
   {
+    if (!str || !used_abc) return 0;
     size_t count = 0;
     for (size_t i = 0; str[i] != '\0'; ++i)
     {
@@ -168,7 +168,6 @@ int main()
 
   size_t size_str_uni_two = pos + second_len + 1;
 
-  char * str_uni_two = nullptr;
   char* result_uni_two = kondrat::create_str(size_str_uni_two);
   if (!result_uni_two)
   {
@@ -177,12 +176,12 @@ int main()
   }
 
   int used_abc[52] = {};
-  kondrat::uni_two(str, second_str, str_uni_two);
+  kondrat::uni_two(str, second_str, result_uni_two);
   size_t ans_dif_lat = kondrat::dif_lat(str, used_abc);
 
-  std::cout << str_uni_two << "\n";
+  std::cout << result_uni_two << "\n";
   std::cout << ans_dif_lat << "\n";
 
   delete[] str;
-  delete[] str_uni_two;
+  delete[] result_uni_two;
 }
