@@ -28,12 +28,12 @@ namespace kondrat
     {
       return nullptr;
     }
-    
+
     for (size_t i = 0; i < small_size; ++i)
     {
       new_str[i] = small_str[i];
     }
-    
+
     delete[] small_str;
     size = new_size;
     return new_str;
@@ -66,7 +66,7 @@ namespace kondrat
       }
       if (pos + 1 >= size)
       {
-        char * bigger = expand_str(buffer, size);
+        char * bigger = expand_str(buffer, pos, size);
         if (!bigger)
         {
           return nullptr;
