@@ -58,6 +58,15 @@ namespace kondrat
 
     int ch = 0;
 
+    ch = in.get();
+    if (ch == '\n' || ch == EOF)
+    {
+      delete[] buffer;
+      return nullptr;
+    }
+
+    buffer[pos++] = static_cast< char >(ch);
+
     while (true)
     {
       ch = in.get();
