@@ -230,7 +230,7 @@ bool parsov::spiral_mod(int * data, size_t cols, size_t side, size_t sr, size_t 
     return true;
   }
 
-  bool * used = static_cast<bool *>(std::malloc(side * side * sizeof(bool)));
+  bool * used = static_cast <bool *> (std::malloc(side * side * sizeof(bool)));
   if(!used) {
     throw std::runtime_error("Memory allocation failed\n");
   }
