@@ -223,7 +223,7 @@ std::ostream & parsov::write_mtx(std::ostream & out, const int * data,
   return out;
 }
 
-bool parsov::spiral_mod(int * data, size_t cols, size_t side, size_t sr, size_t sc, 
+bool parsov::spiral_mod(int * data, size_t cols, size_t side, size_t sr, size_t sc,
                         const int dr[4], const int dc[4], int sign)
 {
   if(side == 0) {
