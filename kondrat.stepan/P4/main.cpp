@@ -48,6 +48,7 @@ namespace kondrat
     }
 
     size = 5;
+    pos = 0;
     char * buffer = create_str(size);
 
     if (!buffer)
@@ -69,6 +70,7 @@ namespace kondrat
         char * bigger = expand_str(buffer, pos, size);
         if (!bigger)
         {
+          delete[] buffer;
           return nullptr;
         }
         buffer = bigger;
@@ -85,7 +87,7 @@ namespace kondrat
     return buffer;
   }
 
-  size_t len_str(char * str)
+  size_t len_str(const char * str)
   {
     if (!str) return 0;
     size_t len = 0;
@@ -96,7 +98,7 @@ namespace kondrat
     return len;
   }
 
-  char * uni_two(char * first_str, char * second_str, char * out)
+  char * uni_two(char * first_str, const char * second_str, char * out)
   {
     size_t i = 0;
     size_t j = 0;
@@ -146,6 +148,7 @@ namespace kondrat
         }
       }
     }
+    return count;
   }
 }
 
@@ -153,7 +156,7 @@ int main()
 {
   size_t size = 0;
   size_t pos = 0;
-  char * second_str = "def_";
+  const char * second_str = "def_";
   size_t second_len = kondrat::len_str(second_str);
 
   char * str = kondrat::getline(std::cin, size, pos);
