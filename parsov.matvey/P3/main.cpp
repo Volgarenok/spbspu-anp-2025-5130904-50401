@@ -21,14 +21,8 @@ namespace parsov
   std::ostream & write_mtx(std::ostream & out, const int * data,
                            size_t n, size_t m);
 
-  bool spiral_mod(int * data,
-                  size_t cols,
-                  size_t side,
-                  size_t sr,
-                  size_t sc,
-                  const int dr[4],
-                  const int dc[4],
-                  int sign);
+  bool spiral_mod(int * data, size_t cols, size_t side, size_t sr, size_t sc, 
+                  const int dr[4], const int dc[4], int sign);
 
   bool lft_top_clk(int * data, size_t n, size_t m);
   bool lft_bot_cnt(int * data, size_t n, size_t m);
@@ -55,7 +49,6 @@ int main(int argc, char ** argv)
     size_t m = 0;
     parsov::read_hdr(in, n, m);
 
-    // ✔ ПУСТАЯ МАТРИЦА — НЕ ОШИБКА
     if(n == 0 || m == 0) {
       std::ofstream out(argv[3]);
       if(!out) {
@@ -70,12 +63,12 @@ int main(int argc, char ** argv)
     }
 
     int static_buf[parsov::MAX_STATIC] = {};
-    if(mode == 1) {
+    if (mode == 1) {
       data = static_buf;
       parsov::read_mtx_static(in, data, n, m);
     } else {
-      data = static_cast<int *>(std::malloc(n * m * sizeof(int)));
-      if(!data) {
+      data = static_cast <int *> (std::malloc(n * m * sizeof(int)));
+      if (!data) {
         throw std::runtime_error("Memory allocation failed\n");
       }
       parsov::read_mtx_dyn(in, data, n, m);
@@ -83,13 +76,11 @@ int main(int argc, char ** argv)
 
     in.close();
 
-    bool ok = (mode == 1 ?
-      parsov::lft_top_clk(data, n, m) :
-      parsov::lft_bot_cnt(data, n, m));
+    bool ok = (mode == 1 ? parsov::lft_top_clk(data, n, m) : parsov::lft_bot_cnt(data, n, m));
 
-    if(!ok) {
-      if(mode == 2 && data) {
-        std::free(data);
+    if (!ok) {
+      if (mode == 2 && data) {
+        std::free(data); 
       }
       throw std::runtime_error("Processing error\n");
     }
@@ -111,15 +102,15 @@ int main(int argc, char ** argv)
 
     return 0;
 
-  } catch(std::runtime_error & e) {
+  } catch (std::runtime_error & e) {
     std::cerr << e.what();
-    if(mode == 2 && data) {
+    if (mode == 2 && data) {
       std::free(data);
     }
     return 1;
-  } catch(...) {
+  } catch (...) {
     std::cerr << "Unknown error\n";
-    if(mode == 2 && data) {
+    if (mode == 2 && data) {
       std::free(data);
     }
     return 1;
@@ -199,13 +190,12 @@ std::istream & parsov::read_mtx_dyn(std::istream & in, int * data,
       throw std::runtime_error("Cannot read matrix values\n");
     }
   }
-
   return in;
 }
 
 size_t parsov::sq_side(size_t n, size_t m)
 {
-  return (n < m ? n : m);
+  return std::min(n, m);
 }
 
 std::ostream & parsov::write_mtx(std::ostream & out, const int * data,
@@ -233,14 +223,8 @@ std::ostream & parsov::write_mtx(std::ostream & out, const int * data,
   return out;
 }
 
-bool parsov::spiral_mod(int * data,
-                        size_t cols,
-                        size_t side,
-                        size_t sr,
-                        size_t sc,
-                        const int dr[4],
-                        const int dc[4],
-                        int sign)
+bool parsov::spiral_mod(int * data, size_t cols, size_t side, size_t sr, size_t sc, 
+                        const int dr[4], const int dc[4], int sign)
 {
   if(side == 0) {
     return true;
@@ -250,7 +234,6 @@ bool parsov::spiral_mod(int * data,
   if(!used) {
     throw std::runtime_error("Memory allocation failed\n");
   }
-
   for(size_t i = 0; i < side * side; i++) {
     used[i] = false;
   }
