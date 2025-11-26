@@ -15,7 +15,7 @@ namespace burukov
 int* burukov::createMatrix(size_t rows, size_t cols)
 {
   int* matrix = nullptr;
-  matrix = static_cast<int*>(malloc(rows * cols * sizeof(int)));
+  matrix = static_cast< int* >(malloc(rows * cols * sizeof(int)));
   return matrix;
 }
 
@@ -76,7 +76,7 @@ bool burukov::readMatrixElement(std::ifstream& input, int& value)
     return false;
   }
 
-  value = static_cast<int>(temp);
+  value = static_cast< int >(temp);
   return true;
 }
 
