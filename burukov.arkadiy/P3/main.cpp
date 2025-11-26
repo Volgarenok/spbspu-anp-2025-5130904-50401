@@ -27,7 +27,8 @@ int burukov::countLocalMinima(const int* matrix, size_t rows, size_t cols)
     for (size_t j = 1; j < cols - 1; ++j)
     {
       const int current = matrix[i * cols + j];
-      bool isMinimum = current < matrix[(i - 1) * cols + j];
+      bool isMinimum = true;
+      isMinimum = isMinimum && (current < matrix[(i - 1) * cols + j]);
       isMinimum = isMinimum && (current < matrix[(i + 1) * cols + j]);
       isMinimum = isMinimum && (current < matrix[i * cols + (j - 1)]);
       isMinimum = isMinimum && (current < matrix[i * cols + (j + 1)]);
@@ -48,7 +49,8 @@ int burukov::countLocalMaxima(const int* matrix, size_t rows, size_t cols)
     for (size_t j = 1; j < cols - 1; ++j)
     {
       const int current = matrix[i * cols + j];
-      bool isMaximum = current > matrix[(i - 1) * cols + j];
+      bool isMaximum = true;
+      isMaximum = isMaximum && (current > matrix[(i - 1) * cols + j]);
       isMaximum = isMaximum && (current > matrix[(i + 1) * cols + j]);
       isMaximum = isMaximum && (current > matrix[i * cols + (j - 1)]);
       isMaximum = isMaximum && (current > matrix[i * cols + (j + 1)]);
@@ -69,7 +71,8 @@ bool burukov::readMatrixElement(std::ifstream& input, int& value)
     return false;
   }
 
-  const size_t maxInt = static_cast< size_t >(std::numeric_limits< int >::max());
+  const size_t maxInt =
+    static_cast< size_t >(std::numeric_limits< int >::max());
   if (temp > maxInt)
   {
     std::cerr << "Number out of int range";
@@ -84,7 +87,10 @@ int main(int argc, char* argv[])
 {
   if (argc != 4)
   {
-    std::cerr << "Error: " << (argc < 4 ? "Not enough arguments" : "Too many arguments");
+    const char* errorMsg = (argc < 4)
+      ? "Not enough arguments"
+      : "Too many arguments";
+    std::cerr << "Error: " << errorMsg;
     return 1;
   }
 
@@ -159,7 +165,7 @@ int main(int argc, char* argv[])
             else if (input.fail())
             {
               input.clear();
-              std::cerr << "Unexpected input";
+              std::cerr << "Unexpected input format";
             }
             return 2;
           }
@@ -182,9 +188,10 @@ int main(int argc, char* argv[])
       }
 
       bool success = true;
-      for (size_t i = 0; i < rows && success; ++i)
+      const bool readCondition = success;
+      for (size_t i = 0; i < rows && readCondition; ++i)
       {
-        for (size_t j = 0; j < cols && success; ++j)
+        for (size_t j = 0; j < cols && readCondition; ++j)
         {
           int value = 0;
           if (!burukov::readMatrixElement(input, value))
@@ -196,7 +203,7 @@ int main(int argc, char* argv[])
             else if (input.fail())
             {
               input.clear();
-              std::cerr << "Unexpected input";
+              std::cerr << "Unexpected input format";
             }
             success = false;
           }
@@ -212,7 +219,7 @@ int main(int argc, char* argv[])
         const int resultMin = burukov::countLocalMinima(matrix, rows, cols);
         const int resultMax = burukov::countLocalMaxima(matrix, rows, cols);
         output << resultMin << '\n';
-        output << resultMax;
+        output << resultMax<< '\n';
       }
       
       free(matrix);
