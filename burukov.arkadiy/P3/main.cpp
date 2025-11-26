@@ -221,7 +221,7 @@ int main(int argc, char* argv[])
         output << resultMin << '\n';
         output << resultMax<< '\n';
       }
-      
+
       free(matrix);
       if (!success)
       {
