@@ -72,7 +72,7 @@ bool burukov::readMatrixElement(std::ifstream& input, int& value)
   const size_t maxInt = static_cast< size_t >(std::numeric_limits< int >::max());
   if (temp > maxInt)
   {
-    std::cerr << "Number out of int range" << "\n";
+    std::cerr << "Number out of int range";
     return false;
   }
 
@@ -84,20 +84,20 @@ int main(int argc, char* argv[])
 {
   if (argc != 4)
   {
-    std::cerr << "Error: " << (argc < 4 ? "Not enough arguments" : "Too many arguments") << "\n";
+    std::cerr << "Error: " << (argc < 4 ? "Not enough arguments" : "Too many arguments");
     return 1;
   }
 
   const char* numStr = argv[1];
   if (numStr[0] != '1' && numStr[0] != '2')
   {
-    std::cerr << "First parameter is out of range" << "\n";
+    std::cerr << "First parameter is out of range";
     return 1;
   }
 
   if (numStr[1] != '\0')
   {
-    std::cerr << "First parameter is not number" << "\n";
+    std::cerr << "First parameter is not number";
     return 1;
   }
 
@@ -108,14 +108,14 @@ int main(int argc, char* argv[])
   std::ifstream input(inputFileName);
   if (!input.is_open())
   {
-    std::cerr << "Cannot open input file" << "\n";
+    std::cerr << "Cannot open input file";
     return 1;
   }
 
   std::ofstream output(outputFileName);
   if (!output.is_open())
   {
-    std::cerr << "Cannot create output file" << "\n";
+    std::cerr << "Cannot create output file";
     return 1;
   }
 
@@ -125,13 +125,13 @@ int main(int argc, char* argv[])
     size_t cols = 0;
     if (!(input >> rows >> cols))
     {
-      std::cerr << "Cannot read matrix dimensions" << "\n";
+      std::cerr << "Cannot read matrix dimensions";
       return 2;
     }
 
     if (rows == 0 && cols == 0)
     {
-      output << "0 0" << "\n";
+      output << "0 0";
       return 0;
     }
 
@@ -140,7 +140,7 @@ int main(int argc, char* argv[])
     {
       if (rows * cols > maxStaticSize)
       {
-        std::cerr << "Matrix is too large for static array" << "\n";
+        std::cerr << "Matrix is too large for static array";
         return 2;
       }
 
@@ -154,12 +154,12 @@ int main(int argc, char* argv[])
           {
             if (input.eof())
             {
-              std::cerr << "Not enough elements for matrix" << "\n";
+              std::cerr << "Not enough elements for matrix";
             }
             else if (input.fail())
             {
               input.clear();
-              std::cerr << "Unexpected input" << "\n";
+              std::cerr << "Unexpected input";
             }
             return 2;
           }
@@ -170,14 +170,14 @@ int main(int argc, char* argv[])
       const int resultMin = burukov::countLocalMinima(matrix, rows, cols);
       const int resultMax = burukov::countLocalMaxima(matrix, rows, cols);
       output << resultMin << '\n';
-      output << resultMax << '\n';
+      output << resultMax;
     }
     else
     {
       int* matrix = burukov::createMatrix(rows, cols);
       if (matrix == nullptr)
       {
-        std::cerr << "Memory allocation failed" << "\n";
+        std::cerr << "Memory allocation failed";
         return 2;
       }
 
@@ -191,12 +191,12 @@ int main(int argc, char* argv[])
           {
             if (input.eof())
             {
-              std::cerr << "Not enough elements for matrix" << "\n";
+              std::cerr << "Not enough elements for matrix";
             }
             else if (input.fail())
             {
               input.clear();
-              std::cerr << "Unexpected input" << "\n";
+              std::cerr << "Unexpected input";
             }
             success = false;
           }
@@ -211,8 +211,8 @@ int main(int argc, char* argv[])
       {
         const int resultMin = burukov::countLocalMinima(matrix, rows, cols);
         const int resultMax = burukov::countLocalMaxima(matrix, rows, cols);
-        output << resultMin << "\n";
-        output << resultMax << "\n";
+        output << resultMin << '\n';
+        output << resultMax;
       }
       
       free(matrix);
@@ -224,7 +224,7 @@ int main(int argc, char* argv[])
   }
   catch (const std::exception& e)
   {
-    std::cerr << "Exception: " << e.what() << "\n";
+    std::cerr << "Exception: " << e.what();
     return 2;
   }
   return 0;
