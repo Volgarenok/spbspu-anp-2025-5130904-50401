@@ -70,7 +70,6 @@ int main(int argc, char ** argv)
         throw std::runtime_error("Memory allocation failed\n");
       }
       if (!parsov::read_mtx_dyn(in, data, n, m)) {
-        std::free(data);
         throw std::runtime_error("Cannot read matrix values\n");
       }
     }
