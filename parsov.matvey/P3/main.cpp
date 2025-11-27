@@ -10,19 +10,15 @@ namespace parsov
 
   void read_hdr(std::istream & in, size_t & n, size_t & m);
 
-  std::istream & read_mtx_static(std::istream & in, int * buf,
-                                 size_t n, size_t m);
+  std::istream & read_mtx_static(std::istream & in, int * buf, size_t n, size_t m);
 
-  std::istream & read_mtx_dyn(std::istream & in, int * data,
-                              size_t n, size_t m);
+  std::istream & read_mtx_dyn(std::istream & in, int * data, size_t n, size_t m);
 
   size_t sq_side(size_t n, size_t m);
 
-  std::ostream & write_mtx(std::ostream & out, const int * data,
-                           size_t n, size_t m);
+  std::ostream & write_mtx(std::ostream & out, const int * data, size_t n, size_t m);
 
-  bool spiral_mod(int * data, size_t cols, size_t side, size_t sr, size_t sc,
-                  const int dr[4], const int dc[4], int sign);
+  bool spiral_mod(int * data, size_t cols, size_t side, size_t sr, size_t sc, const int dr[4], const int dc[4], int sign);
 
   bool lft_top_clk(int * data, size_t n, size_t m);
   bool lft_bot_cnt(int * data, size_t n, size_t m);
@@ -65,13 +61,18 @@ int main(int argc, char ** argv)
     int static_buf[parsov::MAX_STATIC] = {};
     if (mode == 1) {
       data = static_buf;
-      parsov::read_mtx_static(in, data, n, m);
+      if (!parsov::read_mtx_static(in, data, n, m)) {
+        throw std::runtime_error("Cannot read matrix values\n");
+      }
     } else {
       data = static_cast <int *> (std::malloc(n * m * sizeof(int)));
       if (!data) {
         throw std::runtime_error("Memory allocation failed\n");
       }
-      parsov::read_mtx_dyn(in, data, n, m);
+      if (!parsov::read_mtx_dyn(in, data, n, m)) {
+        std::free(data);
+        throw std::runtime_error("Cannot read matrix values\n");
+      }
     }
 
     in.close();
@@ -166,29 +167,22 @@ void parsov::read_hdr(std::istream & in, size_t & n, size_t & m)
   m = static_cast<size_t>(rm);
 }
 
-std::istream & parsov::read_mtx_static(std::istream & in, int * buf,
-                                       size_t n, size_t m)
+std::istream & parsov::read_mtx_static(std::istream& in, int* buf, size_t n, size_t m)
 {
-  const size_t total = n * m;
+    const size_t total = n * m;
 
-  for(size_t i = 0; i < total; i++) {
-    if(!(in >> buf[i])) {
-      throw std::runtime_error("Cannot read matrix values\n");
+    for(size_t i = 0; i < total; i++) {
+        in >> buf[i];
     }
-  }
 
-  return in;
+    return in;
 }
 
-std::istream & parsov::read_mtx_dyn(std::istream & in, int * data,
-                                    size_t n, size_t m)
+std::istream & parsov::read_mtx_dyn(std::istream & in, int * data, size_t n, size_t m)
 {
   const size_t total = n * m;
-
   for(size_t i = 0; i < total; i++) {
-    if(!(in >> data[i])) {
-      throw std::runtime_error("Cannot read matrix values\n");
-    }
+    in >> data[i];
   }
   return in;
 }
@@ -198,8 +192,7 @@ size_t parsov::sq_side(size_t n, size_t m)
   return std::min(n, m);
 }
 
-std::ostream & parsov::write_mtx(std::ostream & out, const int * data,
-                                 size_t n, size_t m)
+std::ostream & parsov::write_mtx(std::ostream & out, const int * data, size_t n, size_t m)
 {
   const size_t side = sq_side(n, m);
 
