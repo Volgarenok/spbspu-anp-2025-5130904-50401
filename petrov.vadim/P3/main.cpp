@@ -22,6 +22,7 @@ bool petrov::create_matrix(std::istream& in, int*& mtx, size_t rows, size_t cols
   if (choose_mode)
   {
     static const size_t MAX_SIZE = 10000;
+
     if (rows * cols <= MAX_SIZE)
     {
       static int static_buf[MAX_SIZE];
@@ -50,6 +51,7 @@ bool petrov::create_matrix(std::istream& in, int*& mtx, size_t rows, size_t cols
     {
       mtx[i] = 0;
     }
+
   }
   petrov::fill(in, mtx, rows, cols);
   if (!in)
