@@ -4,48 +4,45 @@
 
 namespace kudaev
 {
-  size_t getline(std::istream&, char*, size_t, size_t);
-  size_t strlen(const char*);
-  char* getstr(char*);
-  size_t has_same(const char*, const char*);
-  char* lat_rmv(const char*);
+  size_t getLine(std::istream&, char*, size_t, size_t);
+  size_t strLen(const char*);
+  char* getStr(char*);
+  size_t hasSame(const char*, const char*);
+  void latRmv(const char*, char*, size_t)
 }
 
 int main()
 {
   char* str1 = nullptr;
-  char* str2 = nullptr;
-  char* str3 = nullptr;
-  str1 = kudaev::getstr(str1);
-  str2 = kudaev::getstr(str2);
-  str3 = kudaev::getstr(str3);
-  if (!str1 || !str2 || !str3 || kudaev::strlen(str1) == 0 || kudaev::strlen(str2) == 0 || kudaev::strlen(str3) == 0)
+  const char* str2 = "Ilovecpp";
+  const char* str3 = "abs213fsd";
+  str1 = kudaev::getStr(str1);
+  if (!str1)
   {
-    std::cerr << "Error: failed to read input\n";
+    std::cerr << "Failed to read input\n";
     if (str1)
     {
       free(str1);
     }
-    if (str2)
-    {
-      free(str2);
-    }
-    if (str3)
-    {
-      free(str3);
-    }
     return 1;
   }
-  std::cout << kudaev::has_same(str1, str2) << '\n';
-  char* lat_rmv_result = kudaev::lat_rmv(str3);
-  std::cout << lat_rmv_result << '\n';
-  free(lat_rmv_result);
+  std::cout << kudaev::hasSame(str1, str2) << '\n';
+  size_t buffer_size = kudaev::strLen(str3) + 1;
+  char* buffer = static_cast<char*>(malloc(buffer_size));
+  if (!buffer)
+  {
+    std::cerr << "Memory allocation failed\n";
+    free(str1);
+    return 1;
+  }
+  kudaev::latRmv(str3, buffer, buffer_size);
+  std::cout << buffer << '\n';
+  free(buffer);
   free(str1);
-  free(str2);
-  free(str3);
+  return 0;
 }
 
-size_t kudaev::getline(std::istream& in, char* str, size_t length, size_t capacity)
+size_t kudaev::getLine(std::istream& in, char* str, size_t length, size_t capacity)
 {
   in >> std::noskipws;
   char ch;
@@ -65,7 +62,7 @@ size_t kudaev::getline(std::istream& in, char* str, size_t length, size_t capaci
   return length;
 }
 
-size_t kudaev::strlen(const char* str)
+size_t kudaev::strLen(const char* str)
 {
   if (str == nullptr)
   {
@@ -79,7 +76,7 @@ size_t kudaev::strlen(const char* str)
   return length;
 }
 
-char* kudaev::getstr(char* str)
+char* kudaev::getStr(char* str)
 {
   size_t capacity = 2, length = 0;
   try
@@ -91,7 +88,7 @@ char* kudaev::getstr(char* str)
     }
     while (true)
     {
-      length = getline(std::cin, str, length, capacity);
+      length = getLine(std::cin, str, length, capacity);
       if (length < capacity - 1 || std::cin.eof())
       {
         break;
@@ -120,18 +117,24 @@ char* kudaev::getstr(char* str)
     }
     return nullptr;
   }
+  if (length == 0)
+  {
+    free(str);
+    str = nullptr;
+    return nullptr;
+  }
   return str;
 }
 
-size_t kudaev::has_same(const char* str1, const char* str2)
+size_t kudaev::hasSame(const char* str1, const char* str2)
 {
   if (str1 == nullptr || str2 == nullptr)
   {
     return 0;
   }
   size_t count = 0;
-  size_t len1 = strlen(str1);
-  size_t len2 = strlen(str2);
+  size_t len1 = strLen(str1);
+  size_t len2 = strLen(str2);
   for (size_t i = 0; i < len1; ++i)
   {
     for (size_t j = 0; j < len2; ++j)
@@ -145,33 +148,19 @@ size_t kudaev::has_same(const char* str1, const char* str2)
   return count;
 }
 
-char* kudaev::lat_rmv(const char* str)
+void kudaev::latRmv(const char* src, char* dest, size_t dest_size)
 {
-  if (str == nullptr)
+  if (src == nullptr || dest == nullptr || dest_size == 0)
   {
-    return nullptr;
-  }
-  size_t count = 0;
-  for (size_t i = 0; str[i] != '\0'; ++i)
-  {
-    if (!isalpha(str[i]))
-    {
-      count++;
-    }
-  }
-  char* new_str = static_cast<char*>(malloc((count + 1) * sizeof(char)));
-  if (!new_str)
-  {
-    return nullptr;
+    return;
   }
   size_t j = 0;
-  for (size_t i = 0; str[i] != '\0'; ++i)
+  for (size_t i = 0; src[i] != '\0' && j < dest_size - 1; ++i)
   {
-    if (!isalpha(str[i]))
+    if (!std::isalpha(static_cast<unsigned char>(src[i])))
     {
-      new_str[j++] = str[i];
+      dest[j++] = src[i];
     }
   }
-  new_str[j] = '\0';
-  return new_str;
+  dest[j] = '\0';
 }
