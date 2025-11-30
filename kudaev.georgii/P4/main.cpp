@@ -52,7 +52,9 @@ int main()
     return 1;
   }
   std::cout << kudaev::has_same(str1, str2) << '\n';
-  std::cout << kudaev::lat_rmv(str3) << '\n';
+  char* lat_rmv_result = kudaev::lat_rmv(str3);
+  std::cout << lat_rmv_result << '\n';
+  free(lat_rmv_result);
   free(str1);
   free(str2);
   free(str3);
