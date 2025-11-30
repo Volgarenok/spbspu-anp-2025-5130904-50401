@@ -19,7 +19,7 @@ int main()
   str1 = kudaev::getstr(str1);
   str2 = kudaev::getstr(str2);
   str3 = kudaev::getstr(str3);
-  if (!str1 || !str2 || !str3)
+  if (!str1 || !str2 || !str3 || kudaev::strlen(str1) == 0 || kudaev::strlen(str2) == 0 || kudaev::strlen(str3) == 0)
   {
     std::cerr << "Error: failed to read input\n";
     if (str1)
@@ -118,12 +118,6 @@ char* kudaev::getstr(char* str)
       free(str);
       str = nullptr;
     }
-    return nullptr;
-  }
-  if(length == 0)
-  {
-    free(str);
-    str = nullptr;
     return nullptr;
   }
   return str;
