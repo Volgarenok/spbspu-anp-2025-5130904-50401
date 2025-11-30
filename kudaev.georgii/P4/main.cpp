@@ -4,61 +4,58 @@
 
 namespace kudaev
 {
-	size_t getline(std::istream&, char*, size_t, size_t);
-	size_t strlen(const char*);
-	char* getstr(char*);
-	size_t has_same(const char*, const char*);
-	char* lat_rmv(const char*);
+  size_t getline(std::istream&, char*, size_t, size_t);
+  size_t strlen(const char*);
+  char* getstr(char*);
+  size_t has_same(const char*, const char*);
+  char* lat_rmv(const char*);
 }
 
 int main()
 {
-	char* str1 = nullptr;
-	char* str2 = nullptr;
-	char* str3 = nullptr;
-	try
-	{
-		str1 = kudaev::getstr(str1);
-		if (!str1)
-		{
-			throw std::bad_alloc();
-		}
-		str2 = kudaev::getstr(str2);
-		if (!str2)
-		{
-			throw std::bad_alloc();
-		}
-		str3 = kudaev::getstr(str3);
-		if (!str3)
-		{
-			throw std::bad_alloc();
-		}
-	}
-	catch (std::exception& ex)
-	{
-		std::cerr << ex.what() << '\n';
-		if (str1)
-		{
-			free(str1);
-		}
-		if (str2)
-		{
-			free(str2);
-		}
-		if (str3)
-		{
-			free(str3);
-		}
-		return 1;
-	}
-	std::cout << str1 << '\n';
-	std::cout << str2 << '\n';
-	std::cout << str3 << '\n';
-	std::cout << kudaev::has_same(str1, str2) << '\n';
-	std::cout << kudaev::lat_rmv(str3) << '\n';
-	free(str1);
-	free(str2);
-	free(str3);
+  char* str1 = nullptr;
+  char* str2 = nullptr;
+  char* str3 = nullptr;
+  try
+  {
+    str1 = kudaev::getstr(str1);
+    if (!str1)
+    {
+      throw std::bad_alloc();
+    }
+    str2 = kudaev::getstr(str2);
+    if (!str2)
+    {
+      throw std::bad_alloc();
+    }
+    str3 = kudaev::getstr(str3);
+    if (!str3)
+    {
+      throw std::bad_alloc();
+    }
+  }
+  catch (std::exception& ex)
+  {
+    std::cerr << ex.what() << '\n';
+    if (str1)
+    {
+      free(str1);
+    }
+    if (str2)
+    {
+      free(str2);
+    }
+    if (str3)
+    {
+      free(str3);
+    }
+    return 1;
+  }
+  std::cout << kudaev::has_same(str1, str2) << '\n';
+  std::cout << kudaev::lat_rmv(str3) << '\n';
+  free(str1);
+  free(str2);
+  free(str3);
 }
 
 size_t kudaev::getline(std::istream& in, char* str, size_t length, size_t capacity)
