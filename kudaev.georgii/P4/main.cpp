@@ -97,7 +97,7 @@ char* kudaev::getstr(char* str)
   size_t capacity = 2, length = 0;
   try
   {
-    str = (char*)malloc(capacity * sizeof(char));
+    str = static_cast<char*>(malloc(capacity * sizeof(char)));
     if (!str)
     {
        throw;
@@ -110,7 +110,7 @@ char* kudaev::getstr(char* str)
         break;
       }
       capacity *= 2;
-      char* new_str = (char*)malloc(capacity * sizeof(char));
+      char* new_str = static_cast<char*>(malloc(capacity * sizeof(char)));
       if (!new_str)
       {
         free(str);
@@ -172,7 +172,7 @@ char* kudaev::lat_rmv(const char* str)
       count++;
     }
   }
-  char* new_str = (char*)malloc((count + 1) * sizeof(char));
+  char* new_str = static_cast<char*>(malloc((count + 1) * sizeof(char)));
   if (!new_str)
   {
     return nullptr;
