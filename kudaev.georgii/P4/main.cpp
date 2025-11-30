@@ -8,7 +8,7 @@ namespace kudaev
   size_t strLen(const char*);
   char* getStr(char*);
   size_t hasSame(const char*, const char*);
-  void latRmv(const char*, char*, size_t)
+  void latRmv(const char*, char*, size_t);
 }
 
 int main()
