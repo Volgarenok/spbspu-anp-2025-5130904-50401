@@ -120,6 +120,12 @@ char* kudaev::getstr(char* str)
     }
     return nullptr;
   }
+  if(length == 0)
+  {
+    free(str);
+    str = nullptr;
+    return nullptr;
+  }
   return str;
 }
 
