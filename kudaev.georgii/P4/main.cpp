@@ -16,27 +16,12 @@ int main()
   char* str1 = nullptr;
   char* str2 = nullptr;
   char* str3 = nullptr;
-  try
+  str1 = kudaev::getstr(str1);
+  str2 = kudaev::getstr(str2);
+  str3 = kudaev::getstr(str3);
+  if (!str1 || !str2 || !str3)
   {
-    str1 = kudaev::getstr(str1);
-    if (!str1)
-    {
-      throw std::bad_alloc();
-    }
-    str2 = kudaev::getstr(str2);
-    if (!str2)
-    {
-      throw std::bad_alloc();
-    }
-    str3 = kudaev::getstr(str3);
-    if (!str3)
-    {
-      throw std::bad_alloc();
-    }
-  }
-  catch (std::exception& ex)
-  {
-    std::cerr << ex.what() << '\n';
+    std::cerr << "Error: failed to read input\n";
     if (str1)
     {
       free(str1);
