@@ -71,8 +71,7 @@ bool burukov::readMatrixElement(std::ifstream& input, int& value)
     return false;
   }
 
-  const size_t maxInt =
-    static_cast< size_t >(std::numeric_limits< int >::max());
+  const size_t maxInt = static_cast< size_t >(std::numeric_limits< int >::max());
   if (temp > maxInt)
   {
     std::cerr << "Number out of int range";
@@ -87,9 +86,7 @@ int main(int argc, char* argv[])
 {
   if (argc != 4)
   {
-    const char* errorMsg = (argc < 4)
-      ? "Not enough arguments"
-      : "Too many arguments";
+    const char* errorMsg = (argc < 4)? "Not enough arguments": "Too many arguments";
     std::cerr << "Error: " << errorMsg;
     return 1;
   }
