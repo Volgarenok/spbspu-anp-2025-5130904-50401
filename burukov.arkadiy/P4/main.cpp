@@ -8,6 +8,7 @@ namespace burukov
   size_t stringLength(const char* str);
   char* getline(std::istream& input);
   void removeVowels(const char* source, char* result);
+  void excludeFromFirst(const char* str1, const char* str2, char* result);
   
   const size_t MAX = std::numeric_limits< size_t >::max();
 }
@@ -123,6 +124,49 @@ void burukov::removeVowels(const char* source, char* result)
     if (!isVowel)
     {
       result[resultIndex] = currentChar;
+      ++resultIndex;
+    }
+  }
+  
+  result[resultIndex] = '\0';
+}
+
+void burukov::excludeFromFirst(const char* str1, const char* str2, char* result)
+{
+  size_t resultIndex = 0;
+  
+  for (size_t i = 0; str1[i] != '\0'; ++i)
+  {
+    bool foundInSecond = false;
+    
+    for (size_t j = 0; str2[j] != '\0'; ++j)
+    {
+      char c1 = str1[i];
+      char c2 = str2[j];
+      
+      char lowerC1 = c1;
+      char lowerC2 = c2;
+      
+      if (c1 >= 'A' && c1 <= 'Z')
+      {
+        lowerC1 = c1 + ('a' - 'A');
+      }
+      
+      if (c2 >= 'A' && c2 <= 'Z')
+      {
+        lowerC2 = c2 + ('a' - 'A');
+      }
+      
+      if (lowerC1 == lowerC2)
+      {
+        foundInSecond = true;
+        break;
+      }
+    }
+    
+    if (!foundInSecond)
+    {
+      result[resultIndex] = str1[i];
       ++resultIndex;
     }
   }
