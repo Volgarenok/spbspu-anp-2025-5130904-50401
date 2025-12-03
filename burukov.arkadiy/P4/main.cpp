@@ -7,6 +7,7 @@ namespace burukov
 {
   size_t stringLength(const char* str);
   char* getline(std::istream& input);
+  void removeVowels(const char* source, char* result);
   
   const size_t MAX = std::numeric_limits< size_t >::max();
 }
@@ -100,6 +101,33 @@ char* burukov::getline(std::istream& input)
   }
   
   return str;
+}
+
+void burukov::removeVowels(const char* source, char* result)
+{
+  size_t resultIndex = 0;
+  
+  for (size_t sourceIndex = 0; source[sourceIndex] != '\0'; ++sourceIndex)
+  {
+    char currentChar = source[sourceIndex];
+    
+    bool isVowel = false;
+    if (currentChar == 'a' || currentChar == 'e' || currentChar == 'i' ||
+        currentChar == 'o' || currentChar == 'u' || currentChar == 'y' ||
+        currentChar == 'A' || currentChar == 'E' || currentChar == 'I' ||
+        currentChar == 'O' || currentChar == 'U' || currentChar == 'Y')
+    {
+      isVowel = true;
+    }
+    
+    if (!isVowel)
+    {
+      result[resultIndex] = currentChar;
+      ++resultIndex;
+    }
+  }
+  
+  result[resultIndex] = '\0';
 }
 
 int main()
