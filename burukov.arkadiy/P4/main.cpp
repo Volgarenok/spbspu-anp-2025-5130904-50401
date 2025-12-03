@@ -176,5 +176,46 @@ void burukov::excludeFromFirst(const char* str1, const char* str2, char* result)
 
 int main()
 {
+  char* inputStr = burukov::getline(std::cin);
+  
+  if (inputStr == nullptr)
+  {
+    std::cerr << "Memory allocation failed or input error\n";
+    return 1;
+  }
+  
+  if (inputStr[0] == '\0')
+  {
+    std::cerr << "Empty string\n";
+    delete[] inputStr;
+    return 1;
+  }
+  
+  size_t strLen = burukov::stringLength(inputStr);
+  
+  char* result1 = new(std::nothrow) char[strLen + 1];
+  char* result2 = new(std::nothrow) char[strLen + 1];
+  
+  if (result1 == nullptr || result2 == nullptr)
+  {
+    std::cerr << "Memory allocation failed for result arrays\n";
+    delete[] inputStr;
+    delete[] result1;
+    delete[] result2;
+    return 1;
+  }
+  
+  const char* secondStr = "abc";
+  
+  burukov::removeVowels(inputStr, result1);
+  burukov::excludeFromFirst(inputStr, secondStr, result2);
+  
+  std::cout << result1 << '\n';
+  std::cout << result2 << '\n';
+  
+  delete[] inputStr;
+  delete[] result1;
+  delete[] result2;
+  
   return 0;
 }
