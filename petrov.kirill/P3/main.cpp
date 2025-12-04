@@ -12,7 +12,7 @@ namespace petrov
   void cnt_nzr_dig(std::ofstream& ou, int* mtx, size_t r, size_t c);
   void write_output(std::ofstream& ou, size_t r, const int* mtx);
   void reform(size_t d, size_t r, int* mtx);
-  void count_diagonal(size_t q, size_t& s, size_t i, size_t j, size_t n, bool iszero, const int* mtx);
+  void count_diagonal(size_t r, size_t& s, size_t c, const int* mtx);
   size_t fill_massive(size_t r, std::ifstream& in, int* mtx, size_t s);
 }
 
@@ -93,8 +93,10 @@ int* petrov::make_mtx(std::ifstream& in, size_t r, size_t c)
   return mtx;
 }
 
-void petrov::count_diagonal(size_t q, size_t& s, size_t i, size_t j, size_t n, bool iszero, const int* mtx)
+void petrov::count_diagonal(size_t r, size_t& s, size_t c, const int* mtx)
 {
+  size_t n = std::min(r, c), s = 0, q = 0, i = 0, j = n - 1;
+  bool iszero = 1;
   while (q < n - 1)
   {
     while (i < n - 1)
@@ -125,9 +127,7 @@ void petrov::count_diagonal(size_t q, size_t& s, size_t i, size_t j, size_t n, b
 
 void petrov::fll_inc_way(std::ofstream& ou, const int* mtx, size_t r, size_t c)
 {
-  size_t n = std::min(r, c), s = 0, q = 0, i = 0, j = n - 1;
-  bool iszero = 1;
-  petrov::count_diagonal(q, s, i, j, n, iszero, mtx);
+  petrov::count_diagonal(r, s, c, mtx);
   ou << s;
 }
 
