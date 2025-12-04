@@ -55,7 +55,7 @@ size_t petrov::fill_massive(size_t r, std::ifstream& in, int* mtx, size_t s)
     {
       if (in.eof())
       {
-        throw std::logic_error("err");
+        return s;
       }
       in >> mtx[i * r + j];
       s++;
@@ -80,15 +80,7 @@ int* petrov::make_mtx(std::ifstream& in, size_t r, size_t c)
     throw std::bad_alloc();
   }
   size_t s = 0;
-  try
-  {
-    s = petrov::fill_massive(r, in, mtx, s);
-  }
-  catch (...)
-  {
-    free(mtx);
-    throw std::logic_error("err");
-  }
+  s = petrov::fill_massive(r, in, mtx, s);
   for (size_t i = r * r; i < w; ++i)
   {
     if (in.eof())
@@ -97,11 +89,6 @@ int* petrov::make_mtx(std::ifstream& in, size_t r, size_t c)
       throw std::logic_error("err");
     }
     in >> q;
-  }
-  if (in.fail())
-  {
-    free(mtx);
-    throw std::logic_error("err");
   }
   return mtx;
 }
@@ -132,7 +119,7 @@ void petrov::count_diagonal(size_t q, size_t& s, size_t i, size_t j, size_t n, b
       }
       j++, i--;
     }
-      q++, s += iszero, i = n - 1 - q, j = q, iszero = 1;
+    q++, s += iszero, i = n - 1 - q, j = q, iszero = 1;
   }
 }
 
@@ -246,6 +233,11 @@ int main(int argc, char** argv)
     {
       free(mtx);
       mtx = nullptr;
+      std::cerr << "err\n";
+      return 2;
+    }
+    if (in.fail())
+    {
       std::cerr << "err\n";
       return 2;
     }
