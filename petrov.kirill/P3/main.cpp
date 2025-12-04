@@ -127,6 +127,7 @@ void petrov::count_diagonal(size_t r, size_t& s, size_t c, const int* mtx)
 
 void petrov::fll_inc_way(std::ofstream& ou, const int* mtx, size_t r, size_t c)
 {
+  size_t s = 0;
   petrov::count_diagonal(r, s, c, mtx);
   ou << s;
 }
