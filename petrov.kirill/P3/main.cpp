@@ -95,7 +95,7 @@ int* petrov::make_mtx(std::ifstream& in, size_t r, size_t c)
 
 void petrov::count_diagonal(size_t r, size_t& s, size_t c, const int* mtx)
 {
-  size_t n = std::min(r, c), s = 0, q = 0, i = 0, j = n - 1;
+  size_t n = std::min(r, c), q = 0, i = 0, j = n - 1;
   bool iszero = 1;
   while (q < n - 1)
   {
