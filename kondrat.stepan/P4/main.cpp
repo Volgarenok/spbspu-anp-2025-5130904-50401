@@ -12,7 +12,7 @@ namespace kondrat
     {
       str = new char[size];
     }
-    catch(const std::bad_alloc& e)
+    catch (const std::bad_alloc & e)
     {
       std::cerr << "Memory allocation failed!\n";
       return nullptr;
@@ -23,7 +23,7 @@ namespace kondrat
   char * expand_str(char * small_str, size_t small_size, size_t & size)
   {
     size_t new_size = size + 5;
-    char* new_str = create_str(new_size);
+    char * new_str = create_str(new_size);
     if (!new_str)
     {
       return nullptr;
@@ -39,7 +39,7 @@ namespace kondrat
     return new_str;
   }
 
-  char * getline(std::istream & in, size_t & size, size_t & pos)
+  char * getline(std::istream & in, size_t & size)
   {
     bool is_skipws = in.flags() & std::ios_base::skipws;
     if (is_skipws)
@@ -47,46 +47,68 @@ namespace kondrat
       in >> std::noskipws;
     }
 
-    size = 5;
-    pos = 0;
-    char * buffer = create_str(size);
+    size_t cap = 5;
+    char * buffer = create_str(cap);
 
     if (!buffer)
     {
+      if (is_skipws)
+      {
+        in >> std::skipws;
+      }
       return nullptr;
     }
 
-    int ch = 0;
+    size = 0;
+    char ch = 0;
 
-    ch = in.get();
-    if (ch == '\n' || ch == EOF)
+    if (!in.get(ch))
     {
       delete[] buffer;
+      if (is_skipws)
+      {
+        in >> std::skipws;
+      }
+      return nullptr;
+    }
+    if (ch == '\n')
+    {
+      delete[] buffer;
+      if (is_skipws)
+      {
+        in >> std::skipws;
+      }
       return nullptr;
     }
 
-    buffer[pos++] = static_cast< char >(ch);
+    buffer[size++] = ch;
 
     while (true)
     {
-      ch = in.get();
-      if (ch == '\n' || ch == EOF)
+      if (!in.get(ch) || ch == '\n')
       {
         break;
       }
-      if (pos >= size - 1)
+
+      if (size >= cap - 1)
       {
-        char * bigger = expand_str(buffer, pos, size);
+        char* bigger = expand_str(buffer, size, cap);
         if (!bigger)
         {
           delete[] buffer;
+          if (is_skipws)
+          {
+            in >> std::skipws;
+          }
           return nullptr;
         }
         buffer = bigger;
       }
-      buffer[pos++] = static_cast< char >(ch);
+
+      buffer[size++] = ch;
     }
-    buffer[pos] = '\0';
+
+    buffer[size] = '\0';
 
     if(is_skipws)
     {
@@ -97,7 +119,10 @@ namespace kondrat
 
   size_t len_str(const char * str)
   {
-    if (!str) return 0;
+    if (!str)
+    {
+      return 0;
+    }
     size_t len = 0;
     while (str[len] != '\0')
     {
@@ -168,7 +193,7 @@ int main()
   const char * second_str = "def_";
   size_t second_len = kondrat::len_str(second_str);
 
-  char * str = kondrat::getline(std::cin, size, pos);
+  char * str = kondrat::getline(std::cin, size);
   if (!str)
   {
     std::cerr << "Failed to read input string\n";
