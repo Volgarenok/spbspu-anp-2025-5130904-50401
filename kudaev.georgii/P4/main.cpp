@@ -28,7 +28,7 @@ int main()
   }
   std::cout << kudaev::hasSame(str1, str2) << '\n';
   size_t buffer_size = kudaev::strLen(str3) + 1;
-  char* buffer = static_cast <char*> (malloc(buffer_size));
+  char* buffer = static_cast< char* >(malloc(buffer_size));
   if (!buffer)
   {
     std::cerr << "Memory allocation failed\n";
@@ -81,20 +81,16 @@ char* kudaev::getStr(char* str)
   size_t capacity = 2, length = 0;
   try
   {
-    str = static_cast <char*> (malloc(capacity * sizeof(char)));
+    str = static_cast< char* >(malloc(capacity * sizeof(char)));
     if (!str)
     {
        throw;
     }
-    while (true)
+    while (length < capacity - 1 || std::cin.eof())
     {
       length = getLine(std::cin, str, length, capacity);
-      if (length < capacity - 1 || std::cin.eof())
-      {
-        break;
-      }
       capacity *= 2;
-      char* new_str = static_cast <char*> (malloc(capacity * sizeof(char)));
+      char* new_str = static_cast< char* >(malloc(capacity * sizeof(char)));
       if (!new_str)
       {
         free(str);
@@ -157,7 +153,7 @@ void kudaev::latRmv(const char* src, char* dest, size_t dest_size)
   size_t j = 0;
   for (size_t i = 0; src[i] != '\0' && j < dest_size - 1; ++i)
   {
-    if (!std::isalpha(static_cast <unsigned char> (src[i])))
+    if (!std::isalpha(static_cast< unsigned char >(src[i])))
     {
       dest[j++] = src[i];
     }
