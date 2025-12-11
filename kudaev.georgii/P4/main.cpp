@@ -86,9 +86,13 @@ char* kudaev::getStr(char* str)
     {
       throw;
     }
-    while (length < capacity - 1 && !std::cin.eof())
+    while (!std::cin.eof())
     {
       length = getLine(std::cin, str, length, capacity);
+      if (length < capacity - 1)
+      {
+        break;
+      }
       capacity *= 2;
       char* new_str = static_cast< char* >(malloc(capacity * sizeof(char)));
       if (!new_str)
