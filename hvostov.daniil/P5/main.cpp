@@ -81,6 +81,7 @@ namespace hvostov {
 
 int main()
 {
+  std::ostream & out = std::cout;
   size_t shapes_count = 3;
   hvostov::Shape * shapes[shapes_count] = {};
   hvostov::point_t * polygon_vertices = nullptr;
@@ -109,11 +110,11 @@ int main()
     std::cerr << "Scale needs to be positive!\n";
     return 1;
   }
-  hvostov::printInformationAboutShapes(std::cout, shapes, shapes_count);
+  hvostov::printInformationAboutShapes(out, shapes, shapes_count);
   for (size_t i = 0; i < shapes_count; i++) {
     hvostov::scaleFromPoint(*(shapes[i]), k, scale_point);
   }
-  hvostov::printInformationAboutShapes(std::cout, shapes, shapes_count);
+  hvostov::printInformationAboutShapes(out, shapes, shapes_count);
   delete[] polygon_vertices;
   delete[] complexquad_vertices;
   hvostov::deleteShapes(shapes, shapes_count);
@@ -454,7 +455,7 @@ std::ostream & hvostov::printInformationAboutShape(std::ostream & out, const Sha
   rectangle_t frame = shape->getFrameRect();
   out << "Frame of number " << number << " width = " << frame.width << "\n";
   out << "Frame of number " << number << " height = " << frame.height << "\n";
-  out << "Frame of number " << number << " center = " << frame.center.x << " " << frame.center.y << "\n";
+  out << "Frame of number " << number << " center: (" << frame.center.x << "; " << frame.center.y << ")\n";
   return out;
 }
 
@@ -467,7 +468,7 @@ std::ostream & hvostov::printInformationAboutShapes(std::ostream & out, const Sh
   rectangle_t frame = getFrameRectOfAllShapes(shapes, shape_count);
   out << "Frame of all shapes " << "width = " << frame.width << "\n";
   out << "Frame of all shapes " << "height = " << frame.height << "\n";
-  out << "Frame of all shapes " << "center = (" << frame.center.x << "; " << frame.center.y << ")\n";
+  out << "Frame of all shapes " << "center: (" << frame.center.x << "; " << frame.center.y << ")\n";
   return out;
 }
 
