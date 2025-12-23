@@ -59,6 +59,7 @@ size_t kudaev::getLine(std::istream& in, char* str, size_t length, size_t capaci
     }
   }
   str[length] = '\0';
+  in >> std::skipws;
   return length;
 }
 
@@ -112,7 +113,6 @@ char* kudaev::getStr(char* str)
   {
     if (str)
     {
-      free(str);
       str = nullptr;
     }
     return nullptr;
