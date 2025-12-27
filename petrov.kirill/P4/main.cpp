@@ -68,14 +68,15 @@ int main() {
     std::cerr << "err\n";
     return 1;
   }
-  char* new_str = new char[k];
+  char* new_str = new char[k + 1];
   for (size_t i = 0; i < k; ++i) {
     new_str[i] = str[i];
   }
+  new_str[k] = '\0';
   delete[] str;
   char a, b;
   std::cin >> a >> b;
-  char* rpl_sym_str = new char[k];
+  char* rpl_sym_str = new char[k + 1];
   petrov::rpl_sym(k, new_str, rpl_sym_str, a, b);
   char* new_str_2 = new char[size];
   size_t s = 0;
