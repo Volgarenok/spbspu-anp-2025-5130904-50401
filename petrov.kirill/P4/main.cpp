@@ -59,7 +59,7 @@ bool petrov::find_char(char* a, char b, size_t q)
   return 0;
 }
 
-char* petrov::lat_two(std::istream& in, char* s, char* new_s, size_t q, size_t size)
+char* petrov::lat_two(char* s, char* new_s, size_t q, size_t size)
 {
   char* alph = new char[53];
   size_t j = 0;
@@ -134,7 +134,7 @@ int main()
     std::cerr << "err\n";
     return 1;
   }
-  lat_two_char = petrov::lat_two(std::cin, s, new_s, d, w);
+  lat_two_char = petrov::lat_two(s, new_s, d, w);
   std::cout << rpl_sym_char << "\n" << lat_two_char << "\n";
   delete[] lat_two_char;
   delete[] rpl_sym_char;
