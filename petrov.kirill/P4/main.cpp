@@ -54,7 +54,7 @@ bool petrov::find_char(char* a, char b, size_t q)
     if (a[i] == b)
     {
       return 1;
-    }  
+    }
   }
   return 0;
 }
