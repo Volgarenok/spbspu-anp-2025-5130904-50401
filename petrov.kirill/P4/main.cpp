@@ -30,8 +30,8 @@ int main() {
     for (size_t i = 0; i < k; ++i) {
       std::cout << new_str[i];
     }
-    return 0;
     delete[] new_str;
+    return 0;
   } else {
     std::cerr << "err\n";
     delete[] new_str;
