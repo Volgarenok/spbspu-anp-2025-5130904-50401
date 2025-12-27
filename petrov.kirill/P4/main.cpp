@@ -19,12 +19,12 @@ bool petrov::is_el_in_mass(size_t& k, char* mass, char a) {
 }
 
 void petrov::lat_two(size_t& s, size_t& k, size_t& r, size_t& ch, char* lat_two_str, char* new_str, char* alph) {
-  for (size_t i = 0; i < s; ++i) {
+  for (size_t i = 0; i < s && r < ch; ++i) {
     if (!petrov::is_el_in_mass(ch, alph, lat_two_str[i])) {
       alph[r++] = lat_two_str[i];
     }
   }
-  for (size_t i = 0; i < k; ++i) {
+  for (size_t i = 0; i < k && r < ch; ++i) {
     if (!petrov::is_el_in_mass(ch, alph, new_str[i])) {
       alph[r++] = new_str[i];
     }
@@ -33,13 +33,9 @@ void petrov::lat_two(size_t& s, size_t& k, size_t& r, size_t& ch, char* lat_two_
 
 void petrov::getline(std::istream& in, const size_t size, char* str, size_t& k) {
   std::cin >> std::noskipws;
-  while (in.peek() != '\n' && k <= size) {
+  while (in.peek() != '\n' && k <= size && !in.eof()) {
     if (in.bad() || in.fail()) {
       throw std::logic_error("err");
-    }
-    if (in.eof()) {
-      break;
-      std::cin >> std::skipws;
     }
     in >> str[k++];
   }
