@@ -6,7 +6,7 @@ namespace petrov
 {
   size_t getline(std::istream& in, char* s, size_t q);
   char* rpl_sym(std::istream& in, char* s, size_t q);
-  char* lat_two(std::istream& in, char* s, char* new_s, size_t q, size_t size);
+  char* lat_two(char* s, char* new_s, size_t q, size_t size);
   bool find_char(char* a, char b, size_t q);
   char* sortin(char* a, size_t q);
 }
