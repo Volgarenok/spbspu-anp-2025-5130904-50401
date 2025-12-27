@@ -34,8 +34,12 @@ void petrov::lat_two(size_t& s, size_t& k, size_t& r, size_t& ch, char* lat_two_
 void petrov::getline(std::istream& in, const size_t size, char* str, size_t& k) {
   std::cin >> std::noskipws;
   while (in.peek() != '\n' && k <= size) {
-    if (in.bad() || in.fail() || in.eof()) {
+    if (in.bad() || in.fail()) {
       throw std::logic_error("err");
+    }
+    if (in.eof()) {
+      break;
+      std::cin >> std::skipws;
     }
     in >> str[k++];
   }
