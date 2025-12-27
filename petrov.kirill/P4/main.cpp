@@ -94,7 +94,10 @@ int main() {
   }
   delete[] new_str_2;
   size_t r = 0, ch = 52;
-  char* alph = new char[ch]();
+  char* alph = new char[ch];
+  for (size_t i = 0; i < ch; ++i) {
+    alph[i] = ' ';
+  }
   petrov::lat_two(s, k, r, ch, lat_two_str, new_str, alph);
   for (size_t i = 0; i < k; ++i) {
     std::cout << new_str[i];
