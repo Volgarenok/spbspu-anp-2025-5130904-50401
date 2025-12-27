@@ -31,8 +31,10 @@ int main() {
       std::cout << new_str[i];
     }
     return 0;
+    delete[] new_str;
   } else {
     std::cerr << "err\n";
+    delete[] new_str;
     return 1;
   }
 }
