@@ -9,6 +9,9 @@ namespace petrov {
 void petrov::getline(std::istream& in, const size_t size, char* str, size_t& k) {
   std::cin >> std::noskipws;
   while (in.peek() != '\n' && k <= size) {
+    if (in.bad() || in.fail()) {
+      break;
+    }
     in >> str[k++];
   }
 }
