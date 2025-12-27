@@ -43,7 +43,7 @@ void petrov::getline(std::istream& in, const size_t size, char* str, size_t& k) 
 }
 
 void petrov::rpl_sym(size_t& k, char* new_str, char* rpl_sym_str, char a, char b) {
-  for (size_t i = 0; i < k - 1; ++i) {
+  for (size_t i = 0; i < k; ++i) {
     if (new_str[i] == a) {
       rpl_sym_str[i] = b;
     } else {
@@ -94,7 +94,7 @@ int main() {
   }
   delete[] new_str_2;
   size_t r = 0, ch = 52;
-  char* alph = new char[ch];
+  char* alph = new char[ch]();
   petrov::lat_two(s, k, r, ch, lat_two_str, new_str, alph);
   for (size_t i = 0; i < k; ++i) {
     std::cout << new_str[i];
@@ -104,7 +104,7 @@ int main() {
     std::cout << rpl_sym_str[i];
   }
   std::cout << "\n";
-  for (size_t i = 0; i < ch; ++i) {
+  for (size_t i = 0; i < r; ++i) {
     std::cout << alph[i];
   }
   delete[] lat_two_str;
