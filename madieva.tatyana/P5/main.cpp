@@ -19,9 +19,9 @@ class Shape {
 class Rectangle: Shape {
   double width;
   double height;
-  point_t pos;
+  point_t centre;
   public:
-  Rectangle(double width_, double height_, point_t pos_);
+  Rectangle(double width_, double height_, point_t centre_);
   double getArea() override;
   rectangle_t getFrameRect() override;
   void move(point_t a) override;
@@ -40,18 +40,21 @@ class Bubble: Shape {
   void scale(double ratio) override;
   ~Bubble() = default;
 };
-// class Ring: Shape {
-//   public:
-//   double getArea() override;
-//   rectangle_t getFrameRect() override;
-//   void move(point_t a) override;
-//   void move(double dx, double dy) override;
-//   void scale(double ratio) override;
-//   ~Ring() = default;
-// };
+class Ring: Shape {
+  double big_radius;
+  double small_radius;
+  point_t centre;
+  public:
+  double getArea() override;
+  rectangle_t getFrameRect() override;
+  void move(point_t a) override;
+  void move(double dx, double dy) override;
+  void scale(double ratio) override;
+  ~Ring() = default;
+};
 static double pi = 3.14;
-Rectangle::Rectangle(double width_, double height_, point_t pos_):
-  width(width), height(height), pos(pos_)
+Rectangle::Rectangle(double width_, double height_, point_t centre_):
+  width(width), height(height), centre(centre_)
 {}
 double Rectangle::getArea()
 {
@@ -59,15 +62,15 @@ double Rectangle::getArea()
 }
 rectangle_t Rectangle::getFrameRect()
 {
-  return {width, height, pos};
+  return {width, height, centre};
 }
 void Rectangle::move(point_t a)
 {
-  pos = a;
+  centre = a;
 }
 void Rectangle::move(double dx, double dy)
 {
-  pos = {pos.x + dx, pos.y + dy};
+  centre = {centre.x + dx, centre.y + dy};
 }
 void Rectangle::scale(double ratio)
 {
@@ -96,6 +99,29 @@ void Bubble::scale(double ratio)
   point_t centre{bottom.x, bottom.y + radius};
   radius *= ratio;
   bottom = {centre.x, centre.y - radius};
+}
+double Ring::getArea()
+{
+  double big_area = pi * big_radius * big_radius;
+  double small_area = pi * small_radius * small_radius;
+  return big_area - small_area;
+}
+rectangle_t Ring::getFrameRect()
+{
+  return {big_radius * 2, big_radius * 2, centre};
+}
+void Ring::move(point_t a)
+{
+  centre = a;
+}
+void Ring::move(double dx, double dy)
+{
+  centre = {centre.x + dx, centre.y + dy};
+}
+void Ring::scale(double ratio)
+{
+  big_radius *= ratio;
+  small_radius *= ratio;
 }
 
 
