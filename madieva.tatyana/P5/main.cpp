@@ -29,24 +29,27 @@ class Rectangle: Shape {
   void scale(double ratio) override;
   ~Rectangle() = default;
 };
-// class Bubble: Shape {
-//   public:
-//   double getArea() override;
-//   rectangle_t getFrameRect() override;
-//   void move() override;
-//   void move() override;
-//   void scale() override;
-//   ~Bubble() = default;
-// };
+class Bubble: Shape {
+  double radius;
+  point_t bottom;
+  public:
+  double getArea() override;
+  rectangle_t getFrameRect() override;
+  void move(point_t a) override;
+  void move(double dx, double dy) override;
+  void scale(double ratio) override;
+  ~Bubble() = default;
+};
 // class Ring: Shape {
 //   public:
 //   double getArea() override;
 //   rectangle_t getFrameRect() override;
-//   void move() override;
-//   void move() override;
-//   void scale() override;
+//   void move(point_t a) override;
+//   void move(double dx, double dy) override;
+//   void scale(double ratio) override;
 //   ~Ring() = default;
 // };
+static double pi = 3.14;
 Rectangle::Rectangle(double width_, double height_, point_t pos_):
   width(width), height(height), pos(pos_)
 {}
@@ -56,9 +59,7 @@ double Rectangle::getArea()
 }
 rectangle_t Rectangle::getFrameRect()
 {
-
-  rectangle_t frame{width, height, pos};
-  return frame;
+  return {width, height, pos};
 }
 void Rectangle::move(point_t a)
 {
@@ -73,8 +74,29 @@ void Rectangle::scale(double ratio)
   width = width * ratio;
   height = height * ratio;
 }
-
-
+double Bubble::getArea()
+{
+  return pi * radius * radius;
+}
+rectangle_t Bubble::getFrameRect()
+{
+  point_t centre{bottom.x, bottom.y + radius};
+  return {radius * 2, radius * 2, centre};
+}
+void Bubble::move(point_t a)
+{
+  bottom = a;
+}
+void Bubble::move(double dx, double dy)
+{
+  bottom = {bottom.x + dx, bottom.y + dy};
+}
+void Bubble::scale(double ratio)
+{
+  point_t centre{bottom.x, bottom.y + radius};
+  radius *= ratio;
+  bottom = {centre.x, centre.y - radius};
+}
 
 
 
