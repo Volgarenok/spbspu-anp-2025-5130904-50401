@@ -133,7 +133,10 @@ namespace kondrat
 
   void uni_two(const char * first_str, const char * second_str, char * out)
   {
-    if (!first_str || !second_str || !out) return;
+    if (!first_str || !second_str || !out)
+    {
+      return;
+    }
     size_t i = 0;
     size_t j = 0;
     size_t k = 0;
@@ -154,7 +157,10 @@ namespace kondrat
 
   size_t dif_lat(const char * str, int * used_abc)
   {
-    if (!str || !used_abc) return 0;
+    if (!str || !used_abc)
+    {
+      return 0;
+    }
     size_t count = 0;
     for (size_t i = 0; str[i] != '\0'; ++i)
     {
@@ -173,7 +179,7 @@ namespace kondrat
         }
         else if (std::islower(ch))
         {
-          int id = ch + 25;
+          int id = (ch - 'a') + 26;
           if (!used_abc[id])
           {
             used_abc[id] = 1;
@@ -189,7 +195,6 @@ namespace kondrat
 int main()
 {
   size_t size = 0;
-  size_t pos = 0;
   const char * second_str = "def_";
   size_t second_len = kondrat::len_str(second_str);
 
@@ -200,7 +205,7 @@ int main()
     return 1;
   }
 
-  size_t size_str_uni_two = pos + second_len + 1;
+  size_t size_str_uni_two = size + second_len + 1;
 
   char* result_uni_two = kondrat::create_str(size_str_uni_two);
   if (!result_uni_two)
