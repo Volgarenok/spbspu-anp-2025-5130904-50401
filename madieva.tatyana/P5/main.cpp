@@ -56,7 +56,7 @@ namespace madieva {
     void scale(double ratio) override;
     ~Ring() = default;
   };
-  static double pi = 3.14;
+  const double pi = 3.14;
   Rectangle::Rectangle(double width_, double height_, point_t centre_):
     Shape(), width(width_), height(height_), centre(centre_)
   {
@@ -82,9 +82,6 @@ namespace madieva {
   }
   void Rectangle::scale(double ratio)
   {
-    if (ratio <= 0) {
-      throw std::invalid_argument("Incorrect scale factor");
-    }
     width = width * ratio;
     height = height * ratio;
   }
@@ -114,9 +111,6 @@ namespace madieva {
   }
   void Bubble::scale(double ratio)
   {
-    if (ratio <= 0) {
-      throw std::invalid_argument("Incorrect scale factor");
-    }
     point_t centre{bottom.x, bottom.y + radius};
     radius *= ratio;
     bottom = {centre.x, centre.y - radius};
@@ -127,7 +121,7 @@ namespace madieva {
     small_radius(radius1 < radius2 ? radius1 : radius2),
     centre(centre_)
   {
-    if (big_radius <= 0 || small_radius <= 0 || big_radius <= small_radius) {
+    if (big_radius <= 0 || small_radius <= 0 || big_radius == small_radius) {
       throw std::invalid_argument("Incorrect ring size");
     }
   }
@@ -151,9 +145,6 @@ namespace madieva {
   }
   void Ring::scale(double ratio)
   {
-    if (ratio <= 0) {
-      throw std::invalid_argument("Incorrect scale factor");
-    }
     big_radius *= ratio;
     small_radius *= ratio;
   }
@@ -205,6 +196,7 @@ namespace madieva {
     cout << "rectangle frame height: " << frame.height << "\n";
     cout << "rectangle frame position (x): " << frame.pos.x << "\n";
     cout << "rectangle frame position (y): " << frame.pos.y << "\n";
+    cout << "\n";
 
     cout << "Area bubble: " << array[1]->getArea() << "\n";
     frame = array[1]-> getFrameRect();
@@ -212,6 +204,7 @@ namespace madieva {
     cout << "bubble frame height: " << frame.height << "\n";
     cout << "bubble frame position (x): " << frame.pos.x << "\n";
     cout << "bubble frame position (y): " << frame.pos.y << "\n";
+    cout << "\n";
 
     cout << "Area ring: " << array[2]->getArea() << "\n";
     frame = array[2]-> getFrameRect();
@@ -219,6 +212,7 @@ namespace madieva {
     cout << "ring frame height: " << frame.height << "\n";
     cout << "ring frame position (x): " << frame.pos.x << "\n";
     cout << "ring frame position (y): " << frame.pos.y << "\n";
+    cout << "\n";
 
     cout << "total area: " << array[0]->getArea() + array[1]->getArea() + array[2]->getArea() << "\n";
     frame = totalGetFrameRect(array, size);
@@ -227,11 +221,28 @@ namespace madieva {
     cout << "total frame position (x): " << frame.pos.x << "\n";
     cout << "total frame position (y): " << frame.pos.y << "\n";
   }
+  void scalingFromAPoint(Shape * const * const array, size_t size, point_t a, double k)
+  {
+    for (size_t i = 0; i < size; ++i) {
+      rectangle_t frame = array[i]->getFrameRect();
+      double dx = frame.pos.x - a.x;
+      double dy = frame.pos.y - a.y;
+      array[i]->move(a);
+      array[i]->scale(k);
+      dx *= k;
+      dy *= k;
+      array[i]->move(dx, dy);
+    }
+  }
 }
 
 int main()
 {
-  size_t size = 3;
+  const size_t size = 3;
+  if (size == 0) {
+    std::cerr << "a bad number of shapes\n";
+    return 1;
+  }
   madieva::Shape * array[size] = {};
   try {
     array[0] = new madieva::Rectangle(5, 6, {2, 5});
@@ -239,7 +250,54 @@ int main()
     array[2] = new madieva::Ring(6, 2, {8, 15});
   } catch (const std::invalid_argument &e) {
     std::cerr << e.what() << "\n";
+    for (size_t i = 0; i < size; ++i) {
+      delete array[i];
+    }
     return 1;
   }
+  double x = 0;
+  double y = 0;
+  madieva::point_t a = {0, 0};
+  double k = 0;
+  std::cout << "to scale relative to a point, enter the following data\n";
+  std::cout << "enter x: ";
+  if (!(std::cin >> x)) {
+    std::cerr << "bad argument x\n";
+    for (size_t i = 0; i < size; ++i) {
+      delete array[i];
+    }
+    return 1;
+  }
+  std::cout << "\nenter y: ";
+  if (!(std::cin >> y)) {
+    std::cerr << "bad argument y\n";
+    for (size_t i = 0; i < size; ++i) {
+      delete array[i];
+    }
+    return 1;
+  }
+  a = {x, y};
+  std::cout << "\nenter a positive coefficient: ";
+  if (!(std::cin >> k)) {
+    std::cerr << "bad argument k\n";
+    for (size_t i = 0; i < size; ++i) {
+     delete array[i];
+    }
+    return 1;
+  }
+  if (k <= 0) {
+    std::cerr << "the coefficient cannot be equal to or less than zero\n";
+    return 1;
+  }
+  std::cout << "\n";
+  std::cout << "BEFORE SCALING\n\n";
   madieva::print(std::cout, array, size);
+  std::cout << "\n";
+  madieva::scalingFromAPoint(array, size, a, k);
+  std::cout << "AFTER SCALING\n\n";
+  madieva::print(std::cout, array, size);
+  for (size_t i = 0; i < size; ++i) {
+    delete array[i];
+  }
+  return 0;
 }
