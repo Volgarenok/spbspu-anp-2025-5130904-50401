@@ -66,18 +66,18 @@ size_t petrov::fill_massive(size_t r, std::ifstream& in, int* mtx, size_t s)
 
 int* petrov::make_mtx(std::ifstream& in, size_t r, size_t c)
 {
-  int* mtx;
-  int q;
   size_t w = r * c;
   r = std::min(r, c);
+  int* mtx = reinterpret_cast<int*>(malloc(sizeof(int) * r * r));
+  int q;
   if (r == 0)
   {
+    free(mtx);
     throw std::runtime_error("err");
   }
-  mtx = reinterpret_cast<int*>(malloc(sizeof(int) * r * r));
   if (mtx == nullptr)
   {
-    throw std::bad_alloc();
+    throw std::logic_error("err\n");
   }
   size_t s = 0;
   s = petrov::fill_massive(r, in, mtx, s);
@@ -108,7 +108,7 @@ void petrov::count_diagonal(size_t r, size_t& s, size_t c, const int* mtx)
       i++;
       j--;
     }
-      q++, s += iszero, i = q, j = n - q - 1, iszero = 1;
+    q++, s += iszero, i = q, j = n - q - 1, iszero = 1;
   }
   i = n - 1, q = 0, j = 0, iszero = 1;
   while (q < n - 1)
@@ -129,12 +129,12 @@ void petrov::fll_inc_way(std::ofstream& ou, const int* mtx, size_t r, size_t c)
 {
   size_t s = 0;
   petrov::count_diagonal(r, s, c, mtx);
-  ou << s;
+  ou << s << "\n";
 }
 
 void petrov::write_output(std::ofstream& ou, size_t r, const int* mtx)
 {
-  ou << "\n" << r << " " << r << " ";
+  ou << r << " " << r << " ";
   for (size_t i = 0; i < r; ++i)
   {
     for (size_t j = 0; j < r; ++j)
@@ -166,8 +166,8 @@ void petrov::cnt_nzr_dig(std::ofstream& ou, int* mtx, size_t r, size_t c)
 {
   r = std::min(r, c);
   size_t d = 1;
-  petrov::reform(d, r, mtx);
-  petrov::write_output(ou, r, mtx);
+  reform(d, r, mtx);
+  write_output(ou, r, mtx);
 }
 
 int main(int argc, char** argv)
