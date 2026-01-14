@@ -43,11 +43,13 @@ void petrov::getline(std::istream& in, const size_t size, char* str, size_t& k) 
 }
 
 void petrov::rpl_sym(size_t& k, char* new_str, char* rpl_sym_str, char a, char b) {
-  for (size_t i = 0; i < k; ++i) {
-    if (new_str[i] == a) {
-      rpl_sym_str[i] = b;
-    } else {
-      rpl_sym_str[i] = new_str[i];
+  if (k != 0) {
+    for (size_t i = 0; i < 1; ++i) {
+      if (new_str[i] == a) {
+        rpl_sym_str[i] = b;
+      } else {
+        rpl_sym_str[i] = new_str[i];
+      }
     }
   }
 }
