@@ -50,7 +50,7 @@ int* petrov::make_mtx(std::ifstream& in, size_t r, size_t c, char t, int* statmt
       throw std::logic_error("err\n");
     }
     size_t s = 0;
-    s = petrov::fill_massive(r, in, mtx, s, t);
+    s = petrov::fill_massive(r, in, mtx, s);
     if (s == 0)
     {
       free(mtx);
@@ -77,7 +77,7 @@ int* petrov::make_mtx(std::ifstream& in, size_t r, size_t c, char t, int* statmt
       throw std::logic_error("err\n");
     }
     size_t s = 0;
-    s = petrov::fill_massive(r, in, statmtx, s, t);
+    s = petrov::fill_massive(r, in, statmtx, s);
     for (size_t i = r * r; i < w; ++i)
     {
       if (in.eof())
