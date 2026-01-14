@@ -38,13 +38,13 @@ int* petrov::make_mtx(std::ifstream& in, size_t r, size_t c, char t, int* statmt
   r = std::min(r, c);
   if (t == '2')
   {
-    int* mtx = reinterpret_cast<int*>(malloc(sizeof(int) * r * r));
-    int q;
     if (r == 0)
     {
       free(mtx);
       throw std::runtime_error("err");
     }
+    int* mtx = reinterpret_cast<int*>(malloc(sizeof(int) * r * r));
+    int q;
     if (mtx == nullptr)
     {
       throw std::logic_error("err\n");
