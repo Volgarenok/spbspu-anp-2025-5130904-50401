@@ -6,45 +6,13 @@
 
 namespace petrov
 {
-  void make_fixed_length_mtx(std::ifstream& in, size_t r, size_t c, int* statmtx);
-  int* make_mtx(std::ifstream& in, size_t r, size_t c);
+  int* make_mtx(std::ifstream& in, size_t r, size_t c, char t, int* statmtx);
   void fll_inc_way(std::ofstream& ou, const int* mtx, size_t r, size_t c);
   void cnt_nzr_dig(std::ofstream& ou, int* mtx, size_t r, size_t c);
   void write_output(std::ofstream& ou, size_t r, const int* mtx);
   void reform(size_t d, size_t r, int* mtx);
   void count_diagonal(size_t r, size_t& s, size_t c, const int* mtx);
   size_t fill_massive(size_t r, std::ifstream& in, int* mtx, size_t s);
-}
-
-void petrov::make_fixed_length_mtx(std::ifstream& in, size_t r, size_t c, int* statmtx)
-{
-  r = std::min(c, r);
-  if (r == 0)
-  {
-    throw std::runtime_error("err");
-  }
-  size_t s = 0;
-  for (size_t i = 0; i < r; ++i)
-  {
-    for (size_t j = 0; j < r; ++j)
-    {
-      if (in.eof())
-      {
-        in.setstate(std::ios::failbit);
-        return;
-      }
-      in >> statmtx[i * r + j];
-      s++;
-    }
-  }
-  if (s < r * r)
-  {
-    throw std::logic_error("err");
-  }
-  if (in.fail())
-  {
-    throw std::logic_error("err");
-  }
 }
 
 size_t petrov::fill_massive(size_t r, std::ifstream& in, int* mtx, size_t s)
@@ -64,33 +32,59 @@ size_t petrov::fill_massive(size_t r, std::ifstream& in, int* mtx, size_t s)
   return s;
 }
 
-int* petrov::make_mtx(std::ifstream& in, size_t r, size_t c)
+int* petrov::make_mtx(std::ifstream& in, size_t r, size_t c, char t, int* statmtx)
 {
   size_t w = r * c;
   r = std::min(r, c);
-  int* mtx = reinterpret_cast<int*>(malloc(sizeof(int) * r * r));
-  int q;
-  if (r == 0)
+  if (t == '2')
   {
-    free(mtx);
-    throw std::runtime_error("err");
-  }
-  if (mtx == nullptr)
-  {
-    throw std::logic_error("err\n");
-  }
-  size_t s = 0;
-  s = petrov::fill_massive(r, in, mtx, s);
-  for (size_t i = r * r; i < w; ++i)
-  {
-    if (in.eof())
+    int* mtx = reinterpret_cast<int*>(malloc(sizeof(int) * r * r));
+    int q;
+    if (r == 0)
     {
       free(mtx);
-      throw std::logic_error("err");
+      throw std::runtime_error("err");
     }
-    in >> q;
+    if (mtx == nullptr)
+    {
+      throw std::logic_error("err\n");
+    }
+    size_t s = 0;
+    s = petrov::fill_massive(r, in, mtx, s);
+    for (size_t i = r * r; i < w; ++i)
+    {
+      if (in.eof())
+      {
+        if (t == '2') {
+          free(mtx);
+        }
+        throw std::logic_error("err");
+      }
+      in >> q;
+    }
+    return mtx;
+  } else {
+    int q;
+    if (r == 0)
+    {
+      throw std::runtime_error("err");
+    }
+    if (statmtx == nullptr)
+    {
+      throw std::logic_error("err\n");
+    }
+    size_t s = 0;
+    s = petrov::fill_massive(r, in, statmtx, s);
+    for (size_t i = r * r; i < w; ++i)
+    {
+      if (in.eof())
+      {
+        throw std::logic_error("err");
+      }
+      in >> q;
+    }
+    return &statmtx[0];
   }
-  return mtx;
 }
 
 void petrov::count_diagonal(size_t r, size_t& s, size_t c, const int* mtx)
@@ -197,52 +191,23 @@ int main(int argc, char** argv)
   }
   int statmtx[10000];
   int* mtx = nullptr;
-  if (argv[1][0] == '1')
+  try
   {
-    try
-    {
-      petrov::make_fixed_length_mtx(in, rows, cols, statmtx);
-    }
-    catch (const std::runtime_error&)
-    {
-      return 0;
-    }
-    catch (...)
-    {
-      std::cerr << "err\n";
-      return 2;
-    }
-    if (in.fail())
-    {
-      std::cerr << "err\n";
-      return 2;
-    }
+    petrov::make_mtx(in, rows, cols, argv[1][0], &statmtx[0]);
   }
-  else
+  catch (const std::runtime_error&)
   {
-    try
-    {
-      mtx = petrov::make_mtx(in, rows, cols);
-    }
-    catch (const std::runtime_error&)
-    {
-      free(mtx);
-      mtx = nullptr;
-      return 0;
-    }
-    catch (...)
-    {
-      free(mtx);
-      mtx = nullptr;
-      std::cerr << "err\n";
-      return 2;
-    }
-    if (in.fail())
-    {
-      free(mtx);
-      std::cerr << "err\n";
-      return 2;
-    }
+    return 0;
+  }
+  catch (...)
+  {
+    std::cerr << "err\n";
+    return 2;
+  }
+  if (in.fail())
+  {
+    std::cerr << "err\n";
+    return 2;
   }
   in.close();
   std::ofstream ou(argv[3]);
