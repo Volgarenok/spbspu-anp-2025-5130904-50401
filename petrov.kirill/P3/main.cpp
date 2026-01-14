@@ -195,6 +195,10 @@ int main(int argc, char** argv)
   }
   catch (const std::runtime_error&)
   {
+    if (argv[1][0] == '2')
+    {
+      free(mtx);
+    }
     return 0;
   }
   catch (...)
