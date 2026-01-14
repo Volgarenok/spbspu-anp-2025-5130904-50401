@@ -191,7 +191,7 @@ int main(int argc, char** argv)
   int* mtx = nullptr;
   try
   {
-    petrov::make_mtx(in, rows, cols, argv[1][0], &statmtx[0]);
+    mtx = petrov::make_mtx(in, rows, cols, argv[1][0], &statmtx[0]);
   }
   catch (const std::runtime_error&)
   {
