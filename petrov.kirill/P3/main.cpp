@@ -204,6 +204,10 @@ int main(int argc, char** argv)
   }
   catch (...)
   {
+    if (argv[1][0] == '2')
+    {
+      free(mtx);
+    }
     std::cerr << "err\n";
     return 2;
   }
