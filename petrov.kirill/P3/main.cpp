@@ -55,9 +55,7 @@ int* petrov::make_mtx(std::ifstream& in, size_t r, size_t c, char t, int* statmt
     {
       if (in.eof())
       {
-        if (t == '2') {
-          free(mtx);
-        }
+        free(mtx);
         throw std::logic_error("err");
       }
       in >> q;
