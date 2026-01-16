@@ -46,7 +46,7 @@ int* petrov::make_mtx(std::ifstream& in, size_t r, size_t c, char t, int* mtx)
   }
   if (t == '2')
   {
-    int* mtx = reinterpret_cast<int*>(malloc(sizeof(int) * r * r));
+    mtx = reinterpret_cast<int*>(malloc(sizeof(int) * r * r));
   }
   try
   {
