@@ -44,10 +44,6 @@ int* petrov::make_mtx(std::ifstream& in, size_t r, size_t c, char t, int* statmt
     }
     int* mtx = reinterpret_cast<int*>(malloc(sizeof(int) * r * r));
     int q;
-    if (mtx == nullptr)
-    {
-      throw std::logic_error("err\n");
-    }
     size_t s = 0;
     try
     {
@@ -72,10 +68,6 @@ int* petrov::make_mtx(std::ifstream& in, size_t r, size_t c, char t, int* statmt
     if (r == 0)
     {
       throw std::runtime_error("err");
-    }
-    if (statmtx == nullptr)
-    {
-      throw std::logic_error("err\n");
     }
     size_t s = 0;
     s = petrov::fill_massive(r, in, statmtx, s);
