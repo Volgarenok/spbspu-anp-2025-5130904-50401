@@ -23,7 +23,7 @@ size_t petrov::fill_massive(size_t r, std::ifstream& in, int* mtx, size_t s)
     {
       if (in.eof())
       {
-        return 0;
+        throw std::logic_error("err\n");
       }
       in >> mtx[i * r + j];
       s++;
@@ -49,11 +49,13 @@ int* petrov::make_mtx(std::ifstream& in, size_t r, size_t c, char t, int* statmt
       throw std::logic_error("err\n");
     }
     size_t s = 0;
-    s = petrov::fill_massive(r, in, mtx, s);
-    if (s == 0)
+    try 
     {
-      free(mtx);
-      throw std::logic_error("err\n");
+      s = petrov::fill_massive(r, in, mtx, s);
+    }
+    catch (...) 
+    {
+      throw;
     }
     for (size_t i = r * r; i < w; ++i)
     {
