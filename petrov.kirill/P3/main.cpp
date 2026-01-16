@@ -49,11 +49,11 @@ int* petrov::make_mtx(std::ifstream& in, size_t r, size_t c, char t, int* statmt
       throw std::logic_error("err\n");
     }
     size_t s = 0;
-    try 
+    try
     {
       s = petrov::fill_massive(r, in, mtx, s);
     }
-    catch (...) 
+    catch (...)
     {
       throw;
     }
