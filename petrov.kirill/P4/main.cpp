@@ -20,12 +20,12 @@ bool petrov::is_el_in_mass(size_t& k, char* mass, char a) {
 
 void petrov::lat_two(size_t& s, size_t& k, size_t& r, size_t& ch, char* lat_two_str, char* new_str, char* alph) {
   for (size_t i = 0; i < s && r < ch; ++i) {
-    if (!petrov::is_el_in_mass(ch, alph, lat_two_str[i])) {
+    if (std::isalpha(lat_two_str[i]) && !petrov::is_el_in_mass(r, alph, lat_two_str[i])) {
       alph[r++] = lat_two_str[i];
     }
   }
   for (size_t i = 0; i < k && r < ch; ++i) {
-    if (!petrov::is_el_in_mass(ch, alph, new_str[i])) {
+    if (std::isalpha(new_str[i]) && !petrov::is_el_in_mass(r, alph, new_str[i])) {
       alph[r++] = new_str[i];
     }
   }
@@ -33,26 +33,19 @@ void petrov::lat_two(size_t& s, size_t& k, size_t& r, size_t& ch, char* lat_two_
 
 void petrov::getline(std::istream& in, const size_t size, char* str, size_t& k) {
   in >> std::noskipws;
-  while (in.peek() != '\n' && k < size && in) {
-    if (in.bad() || in.fail()) {
-      throw std::logic_error("err");
-    }
-    in >> str[k++];
-  }
-  if (in.peek() == '\n') {
-    in.ignore();
+  char c = 0;
+  while (in >> c && c != '\n' && k < size) {
+    str[k++] = c;
   }
   in >> std::skipws;
 }
 
 void petrov::rpl_sym(size_t& k, char* new_str, char* rpl_sym_str, char a, char b) {
-  if (k != 0) {
-    for (size_t i = 0; i < k; ++i) {
-      if (new_str[i] == a) {
-        rpl_sym_str[i] = b;
-      } else {
-        rpl_sym_str[i] = new_str[i];
-      }
+  for (size_t i = 0; i < k; ++i) {
+    if (new_str[i] == a) {
+      rpl_sym_str[i] = b;
+    } else {
+      rpl_sym_str[i] = new_str[i];
     }
   }
 }
@@ -61,49 +54,29 @@ int main() {
   const size_t size = 10000;
   char* str = new char[size];
   size_t k = 0;
-  try {
-    petrov::getline(std::cin, size, str, k);
-  } catch (...) {
-    std::cerr << "err\n";
-    delete[] str;
-    return 1;
-  }
+  petrov::getline(std::cin, size, str, k);
   if (k == 0) {
     delete[] str;
     std::cerr << "err\n";
     return 1;
   }
-  char* new_str = new char[k + 1];
+  char* new_str = new char[k];
   for (size_t i = 0; i < k; ++i) {
     new_str[i] = str[i];
   }
-  new_str[k] = '\0';
   delete[] str;
-  char a = 0, b = 0;
+  char a, b;
   if (!(std::cin >> a >> b)) {
     delete[] new_str;
     std::cerr << "err\n";
     return 1;
   }
-  while (std::cin.peek() != '\n' && std::cin.peek() != EOF) {
-    std::cin.ignore();
-  }
-  if (std::cin.peek() == '\n') {
-    std::cin.ignore();
-  }
-  char* rpl_sym_str = new char[k + 1];
+  std::cin.ignore(size, '\n');
+  char* rpl_sym_str = new char[k];
   petrov::rpl_sym(k, new_str, rpl_sym_str, a, b);
   char* new_str_2 = new char[size];
   size_t s = 0;
-  try {
-    petrov::getline(std::cin, size, new_str_2, s);
-  } catch (...) {
-    std::cerr << "err\n";
-    delete[] rpl_sym_str;
-    delete[] new_str;
-    delete[] new_str_2;
-    return 1;
-  }
+  petrov::getline(std::cin, size, new_str_2, s);
   char* lat_two_str = new char[s];
   for (size_t i = 0; i < s; ++i) {
     lat_two_str[i] = new_str_2[i];
@@ -111,9 +84,6 @@ int main() {
   delete[] new_str_2;
   size_t r = 0, ch = 52;
   char* alph = new char[ch];
-  for (size_t i = 0; i < ch; ++i) {
-    alph[i] = ' ';
-  }
   petrov::lat_two(s, k, r, ch, lat_two_str, new_str, alph);
   for (size_t i = 0; i < k; ++i) {
     std::cout << new_str[i];
