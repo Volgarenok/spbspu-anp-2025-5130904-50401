@@ -5,14 +5,14 @@
 namespace kudaev
 {
   size_t getLine(std::istream&, char*, size_t, size_t);
-  char* getStr(char*);
+  char* getStr();
   size_t hasSame(const char*, const char*);
   char* latRmv(const char*);
 }
 
 int main()
 {
-  char* str1 = kudaev::getStr(str1);
+  char* str1 = kudaev::getStr();
   const char* str2 = "Ilovecpp";
   const char* str3 = "abs213fsd";
   if (!str1)
@@ -59,10 +59,10 @@ size_t kudaev::getLine(std::istream& in, char* str, size_t length, size_t capaci
   return length;
 }
 
-char* kudaev::getStr(char* str)
+char* kudaev::getStr()
 {
   size_t capacity = 2, length = 0;
-  str = static_cast< char* >(malloc(capacity * sizeof(char)));
+  char* str = static_cast< char* >(malloc(capacity * sizeof(char)));
   if (!str)
   {
     return nullptr;
