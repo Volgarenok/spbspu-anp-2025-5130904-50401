@@ -48,6 +48,10 @@ size_t kudaev::getLine(std::istream& in, char* str, size_t length, size_t capaci
     str[length++] = ch;
     if (length >= capacity - 1)
     {
+      if (needSkipws)
+      {
+        in.setf(std::ios::skipws);
+      }
       return length;
     }
   }
