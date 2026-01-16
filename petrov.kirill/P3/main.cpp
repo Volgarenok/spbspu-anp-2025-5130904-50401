@@ -38,32 +38,25 @@ void petrov::fill_massive(size_t r, size_t c, std::ifstream& in, int* mtx)
   }
 }
 
-int* petrov::make_mtx(std::ifstream& in, size_t r, size_t c, char t, int* statmtx)
+int* petrov::make_mtx(std::ifstream& in, size_t r, size_t c, char t, int* mtx)
 {
+  if (r == 0)
+  {
+    throw std::runtime_error("err");
+  }
   if (t == '2')
   {
-    if (r == 0)
-    {
-      throw std::runtime_error("err");
-    }
     int* mtx = reinterpret_cast<int*>(malloc(sizeof(int) * r * r));
-    try
-    {
-      petrov::fill_massive(r, c, in, mtx);
-    }
-    catch (...)
-    {
-      throw;
-    }
-    return mtx;
-  } else {
-    if (r == 0)
-    {
-      throw std::runtime_error("err");
-    }
-    petrov::fill_massive(r, c, in, statmtx);
-    return &statmtx[0];
   }
+  try
+  {
+    petrov::fill_massive(r, c, in, mtx);
+  }
+  catch (...)
+  {
+    throw;
+  }
+  return mtx;
 }
 
 void petrov::count_diagonal(size_t r, size_t& s, size_t c, const int* mtx)
