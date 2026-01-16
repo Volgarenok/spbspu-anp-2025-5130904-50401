@@ -1,7 +1,6 @@
 #include <iostream>
 #include <cctype>
 #include <iomanip>
-#include <cstring>
 #include <limits>
 
 namespace petrov {
@@ -78,7 +77,6 @@ void petrov::rpl_sym(size_t& k, char* new_str, char* rpl_sym_str, char a, char b
 int main() {
   const size_t size = 10000;
   char* str = new char[size];
-  memset(str, 0, size);
   size_t k = 0;
   try {
     petrov::getline(std::cin, size, str, k);
@@ -93,7 +91,6 @@ int main() {
     return 1;
   }
   char* new_str = new char[k + 1];
-  memset(new_str, 0, k + 1);
   for (size_t i = 0; i < k; ++i) {
     new_str[i] = str[i];
   }
@@ -103,10 +100,8 @@ int main() {
   std::cin >> a >> b;
   std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
   char* rpl_sym_str = new char[k + 1];
-  memset(rpl_sym_str, 0, k + 1);
   petrov::rpl_sym(k, new_str, rpl_sym_str, a, b);
   char* new_str_2 = new char[size];
-  memset(new_str_2, 0, size);
   size_t s = 0;
   try {
     petrov::getline(std::cin, size, new_str_2, s);
@@ -118,7 +113,6 @@ int main() {
     return 1;
   }
   char* lat_two_str = new char[s + 1];
-  memset(lat_two_str, 0, s + 1);
   for (size_t i = 0; i < s; ++i) {
     lat_two_str[i] = new_str_2[i];
   }
@@ -126,7 +120,9 @@ int main() {
   delete[] new_str_2;
   size_t r = 0, ch = 26;
   char* alph = new char[ch + 1];
-  memset(alph, 0, ch + 1);
+  for (size_t i = 0; i < ch + 1; ++i) {
+    alph[i] = '\0';
+  }
   petrov::lat_two(s, k, r, lat_two_str, new_str, alph);
   std::cout << new_str << "\n";
   std::cout << rpl_sym_str << "\n";
