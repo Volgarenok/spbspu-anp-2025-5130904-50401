@@ -130,7 +130,7 @@ void petrov::fll_inc_way(std::ofstream& ou, const int* mtx, size_t r, size_t c)
 
 void petrov::write_output(std::ofstream& ou, size_t r, const int* mtx)
 {
-  ou << r << " " << r << " ";
+  ou << r << " " << r << " " << "\n";
   for (size_t i = 0; i < r; ++i)
   {
     for (size_t j = 0; j < r; ++j)
