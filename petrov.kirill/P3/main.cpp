@@ -12,24 +12,30 @@ namespace petrov
   void write_output(std::ofstream& ou, size_t r, const int* mtx);
   void reform(size_t d, size_t r, int* mtx);
   void count_diagonal(size_t r, size_t& s, size_t c, const int* mtx);
-  size_t fill_massive(size_t r, std::ifstream& in, int* mtx, size_t s);
+  void fill_massive(size_t r, size_t c, std::ifstream& in, int* mtx);
 }
 
-size_t petrov::fill_massive(size_t r, std::ifstream& in, int* mtx, size_t s)
+void petrov::fill_massive(size_t r, size_t c, std::ifstream& in, int* mtx)
 {
+  int q;
   for (size_t i = 0; i < r; ++i)
   {
-    for (size_t j = 0; j < r; ++j)
+    for (size_t j = 0; j < c; ++j)
     {
       if (in.eof())
       {
         throw std::logic_error("err\n");
       }
-      in >> mtx[i * r + j];
-      s++;
+      if (i < std::min(r, c) && j < std::min(r, c))
+      {
+        in >> mtx[i * r + j];
+      }
+      else
+      {
+        in >> q;
+      }
     }
   }
-  return s;
 }
 
 int* petrov::make_mtx(std::ifstream& in, size_t r, size_t c, char t, int* statmtx)
@@ -43,42 +49,21 @@ int* petrov::make_mtx(std::ifstream& in, size_t r, size_t c, char t, int* statmt
       throw std::runtime_error("err");
     }
     int* mtx = reinterpret_cast<int*>(malloc(sizeof(int) * r * r));
-    int q;
-    size_t s = 0;
     try
     {
-      s = petrov::fill_massive(r, in, mtx, s);
+      petrov::fill_massive(r, c, in, mtx);
     }
     catch (...)
     {
       throw;
     }
-    for (size_t i = r * r; i < w; ++i)
-    {
-      if (in.eof())
-      {
-        free(mtx);
-        throw std::logic_error("err");
-      }
-      in >> q;
-    }
     return mtx;
   } else {
-    int q;
     if (r == 0)
     {
       throw std::runtime_error("err");
     }
-    size_t s = 0;
-    s = petrov::fill_massive(r, in, statmtx, s);
-    for (size_t i = r * r; i < w; ++i)
-    {
-      if (in.eof())
-      {
-        throw std::logic_error("err");
-      }
-      in >> q;
-    }
+    petrov::fill_massive(r, c, in, statmtx);
     return &statmtx[0];
   }
 }
