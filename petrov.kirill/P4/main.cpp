@@ -119,7 +119,6 @@ int main() {
   for (size_t i = 0; i < r; ++i) {
     std::cout << alph[i];
   }
-  std::cout << "\n";
   delete[] lat_two_str;
   delete[] alph;
   delete[] rpl_sym_str;
