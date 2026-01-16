@@ -5,7 +5,7 @@
 namespace petrov {
   void getline(std::istream& in, const size_t size, char* str, size_t& k);
   void rpl_sym(size_t& k, char* new_str, char* rpl_sym_str, char a, char b);
-  void lat_two(size_t& s, size_t& k, size_t& r, size_t& ch, char* lat_two_str, char* new_str, char* alph);
+  void lat_two(size_t& s, size_t& k, size_t& r, char* lat_two_str, char* new_str, char* alph);
   bool is_el_in_mass(size_t& k, char* mass, char a);
   char to_lower(char c);
 };
@@ -26,7 +26,7 @@ bool petrov::is_el_in_mass(size_t& k, char* mass, char a) {
   return 0;
 }
 
-void petrov::lat_two(size_t& s, size_t& k, size_t& r, size_t& ch, char* lat_two_str, char* new_str, char* alph) {
+void petrov::lat_two(size_t& s, size_t& k, size_t& r, char* lat_two_str, char* new_str, char* alph) {
   for (size_t i = 0; i < s; ++i) {
     char c = petrov::to_lower(lat_two_str[i]);
     if (c >= 'a' && c <= 'z' && !petrov::is_el_in_mass(r, alph, c)) {
@@ -122,7 +122,7 @@ int main() {
   for (size_t i = 0; i < ch + 1; ++i) {
     alph[i] = '\0';
   }
-  petrov::lat_two(s, k, r, ch, lat_two_str, new_str, alph);
+  petrov::lat_two(s, k, r, lat_two_str, new_str, alph);
   std::cout << new_str << "\n";
   std::cout << rpl_sym_str << "\n";
   std::cout << alph << "\n";
