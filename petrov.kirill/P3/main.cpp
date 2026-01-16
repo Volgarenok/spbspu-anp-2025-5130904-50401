@@ -28,7 +28,7 @@ void petrov::fill_massive(size_t r, size_t c, std::ifstream& in, int* mtx)
       }
       if (i < std::min(r, c) && j < std::min(r, c))
       {
-        in >> mtx[i * r + j];
+        in >> mtx[i * std::min(r, c) + j];
       }
       else
       {
@@ -40,8 +40,6 @@ void petrov::fill_massive(size_t r, size_t c, std::ifstream& in, int* mtx)
 
 int* petrov::make_mtx(std::ifstream& in, size_t r, size_t c, char t, int* statmtx)
 {
-  size_t w = r * c;
-  r = std::min(r, c);
   if (t == '2')
   {
     if (r == 0)
