@@ -1,7 +1,6 @@
 #include <iostream>
 #include <cctype>
 #include <iomanip>
-#include <stdexcept>
 
 namespace petrov {
   void getline(std::istream& in, const size_t size, char* str, size_t& k);
@@ -21,26 +20,29 @@ bool petrov::is_el_in_mass(size_t& k, char* mass, char a) {
 
 void petrov::lat_two(size_t& s, size_t& k, size_t& r, size_t& ch, char* lat_two_str, char* new_str, char* alph) {
   for (size_t i = 0; i < s && r < ch; ++i) {
-    if (!petrov::is_el_in_mass(r, alph, lat_two_str[i])) {
+    if (!petrov::is_el_in_mass(ch, alph, lat_two_str[i])) {
       alph[r++] = lat_two_str[i];
     }
   }
   for (size_t i = 0; i < k && r < ch; ++i) {
-    if (!petrov::is_el_in_mass(r, alph, new_str[i])) {
+    if (!petrov::is_el_in_mass(ch, alph, new_str[i])) {
       alph[r++] = new_str[i];
     }
   }
 }
 
 void petrov::getline(std::istream& in, const size_t size, char* str, size_t& k) {
-  std::cin >> std::noskipws;
-  while (in.peek() != '\n' && k < size && !in.eof()) {
+  in >> std::noskipws;
+  while (in.peek() != '\n' && k < size && in) {
     if (in.bad() || in.fail()) {
       throw std::logic_error("err");
     }
     in >> str[k++];
   }
-  std::cin >> std::skipws;
+  if (in.peek() == '\n') {
+    in.ignore();
+  }
+  in >> std::skipws;
 }
 
 void petrov::rpl_sym(size_t& k, char* new_str, char* rpl_sym_str, char a, char b) {
@@ -72,20 +74,25 @@ int main() {
     return 1;
   }
   char* new_str = new char[k + 1];
-  if (k > 0) {
-    for (size_t i = 0; i < k; ++i) {
-      new_str[i] = str[i];
-    }
-    new_str[k] = '\0';
+  for (size_t i = 0; i < k; ++i) {
+    new_str[i] = str[i];
   }
+  new_str[k] = '\0';
   delete[] str;
-  char a, b;
-  std::cin >> a >> b;
-  std::cin.ignore();
-  char* rpl_sym_str = new char[k + 1];
-  if (k > 0) {
-    petrov::rpl_sym(k, new_str, rpl_sym_str, a, b);
+  char a = 0, b = 0;
+  if (!(std::cin >> a >> b)) {
+    delete[] new_str;
+    std::cerr << "err\n";
+    return 1;
   }
+  while (std::cin.peek() != '\n' && std::cin.peek() != EOF) {
+    std::cin.ignore();
+  }
+  if (std::cin.peek() == '\n') {
+    std::cin.ignore();
+  }
+  char* rpl_sym_str = new char[k + 1];
+  petrov::rpl_sym(k, new_str, rpl_sym_str, a, b);
   char* new_str_2 = new char[size];
   size_t s = 0;
   try {
@@ -119,6 +126,7 @@ int main() {
   for (size_t i = 0; i < r; ++i) {
     std::cout << alph[i];
   }
+  std::cout << "\n";
   delete[] lat_two_str;
   delete[] alph;
   delete[] rpl_sym_str;
