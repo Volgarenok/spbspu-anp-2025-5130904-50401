@@ -58,13 +58,26 @@ namespace lukashevich {
       if (i == size - 1) {
         str = updateStr(str, size);
         if (!str) {
+          if (isSkipws) {
+            in >> std::skipws;
+          }
           return nullptr;
         }
         size *= 2;
       }
       str[i++] = sym;
     }
-    str[i++] = '\0';
+    
+    if (in.eof() && i == 0) {
+    delete[] str;
+    if (isSkipws) {
+      in >> std::skipws;
+    }
+    std::cerr << "Error input\n";
+    return nullptr;
+  }
+  
+  str[i++] = '\0';
 
     if (isSkipws) {
       in >> std::skipws;
@@ -188,8 +201,13 @@ int main()
   char* resLatTwo = luk::latinLettersInStock(str, secondWord);
   char* resLatRmv = luk::latinRemove(str);
 
-  std::cout << resLatTwo << "\n";
-  std::cout << resLatRmv << "\n";
+  if (resLatTwo) {
+    std::cout << resLatTwo << "\n";
+  }
+  if (resLatRmv) {
+    std::cout << resLatRmv << "\n";
+  }
+  
 
   delete[] str;
   delete[] resLatTwo;
