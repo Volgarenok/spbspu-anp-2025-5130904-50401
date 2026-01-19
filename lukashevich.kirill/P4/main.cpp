@@ -32,9 +32,11 @@ namespace lukashevich {
       delete[] oldStr;
       return nullptr;
     }
+
     for (size_t i = 0; i < oldSize; ++i) {
       newStr[i] = oldStr[i];
     }
+    
     delete[] oldStr;
     return newStr;
   }
@@ -122,7 +124,6 @@ namespace lukashevich {
         result[pos++] = static_cast<char>('a' + i);
       }
     }
-
     result[pos] = '\0';
     return pos;
   }
@@ -143,7 +144,6 @@ namespace lukashevich {
         result[pos++] = str[i];
       }
     }
-
     result[pos] = '\0';
     return pos;
   }
@@ -161,7 +161,6 @@ namespace lukashevich {
       delete[] result;
       return nullptr;
     }
-
     return result;
   }
 
@@ -182,7 +181,6 @@ namespace lukashevich {
       delete[] result;
       return nullptr;
     }
-
     return result;
   }
 }
@@ -206,7 +204,6 @@ int main()
   if (resLatRmv) {
     std::cout << resLatRmv << "\n";
   }
-  
 
   delete[] str;
   delete[] resLatTwo;
