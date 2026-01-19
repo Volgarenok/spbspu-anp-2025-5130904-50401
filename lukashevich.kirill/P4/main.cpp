@@ -71,12 +71,12 @@ namespace lukashevich {
     }
     
     if (in.eof() && i == 0) {
-    delete[] str;
-    if (isSkipws) {
-      in >> std::skipws;
-    }
-    std::cerr << "Error input\n";
-    return nullptr;
+      delete[] str;
+      if (isSkipws) {
+        in >> std::skipws;
+      }
+      std::cerr << "Error input\n";
+      return nullptr;
     }
   
   str[i++] = '\0';
