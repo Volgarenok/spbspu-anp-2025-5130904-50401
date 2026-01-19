@@ -72,7 +72,7 @@ namespace lukashevich {
       }
       str[i++] = sym;
     }
-    
+
     if (in.eof() && i == 0) {
       delete[] str;
       if (isSkipws) {
@@ -81,7 +81,7 @@ namespace lukashevich {
       std::cerr << "Error input\n";
       return nullptr;
     }
-  
+
     str[i++] = '\0';
 
     if (isSkipws) {
