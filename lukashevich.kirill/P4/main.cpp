@@ -53,6 +53,9 @@ namespace lukashevich {
     char sym = 0;
     char* str = createStr(size);
     if (!str) {
+      if (isSkipws) {
+        in >> std::skipws;
+      }
       return nullptr;
     }
 
@@ -176,7 +179,7 @@ namespace lukashevich {
       return nullptr;
     }
 
-    const int len = removeLatinLetters(str, result, static_cast<int>(size + 1));
+    const int len = removeLatinLetters(str, result, static_cast< int >(size + 1));
     if (len < 0) {
       delete[] result;
       return nullptr;
@@ -201,6 +204,7 @@ int main()
   if (resLatTwo) {
     std::cout << resLatTwo << "\n";
   }
+
   if (resLatRmv) {
     std::cout << resLatRmv << "\n";
   }
