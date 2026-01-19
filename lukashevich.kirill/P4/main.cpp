@@ -79,7 +79,7 @@ namespace lukashevich {
       return nullptr;
     }
   
-  str[i++] = '\0';
+    str[i++] = '\0';
 
     if (isSkipws) {
       in >> std::skipws;
