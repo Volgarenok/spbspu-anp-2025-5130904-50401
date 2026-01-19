@@ -36,7 +36,7 @@ namespace lukashevich {
     for (size_t i = 0; i < oldSize; ++i) {
       newStr[i] = oldStr[i];
     }
-    
+
     delete[] oldStr;
     return newStr;
   }
@@ -77,7 +77,7 @@ namespace lukashevich {
     }
     std::cerr << "Error input\n";
     return nullptr;
-  }
+    }
   
   str[i++] = '\0';
 
