@@ -82,7 +82,6 @@ namespace lukashevich {
     if (isSkipws) {
       in >> std::skipws;
     }
-
     return str;
   }
 
