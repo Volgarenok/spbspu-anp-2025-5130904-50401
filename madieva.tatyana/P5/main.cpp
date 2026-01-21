@@ -151,10 +151,10 @@ namespace madieva {
 
   rectangle_t totalGetFrameRect(Shape * const * const array, size_t size)
   {
-    double width = array[0]-> getFrameRect().width;
-    double height = array[0]-> getFrameRect().height;
-    double posx = array[0]-> getFrameRect().pos.x;
-    double posy = array[0]-> getFrameRect().pos.y;
+    double width = array[0]->getFrameRect().width;
+    double height = array[0]->getFrameRect().height;
+    double posx = array[0]->getFrameRect().pos.x;
+    double posy = array[0]->getFrameRect().pos.y;
     double left_x = posx - (width / 2);
     double right_x = posx + (width / 2);
     double bottom_y = posy - (height / 2);
@@ -164,10 +164,10 @@ namespace madieva {
     double miny = bottom_y;
     double maxy = top_y;
     for (size_t i = 0; i < size; ++i) {
-      width = array[i]-> getFrameRect().width;
-      height = array[i]-> getFrameRect().height;
-      posx = array[i]-> getFrameRect().pos.x;
-      posy = array[i]-> getFrameRect().pos.y;
+      width = array[i]->getFrameRect().width;
+      height = array[i]->getFrameRect().height;
+      posx = array[i]->getFrameRect().pos.x;
+      posy = array[i]->getFrameRect().pos.y;
       left_x = posx - (width / 2);
       right_x = posx + (width / 2);
       bottom_y = posy - (height / 2);
@@ -191,7 +191,7 @@ namespace madieva {
   void print(std::ostream &cout, Shape * const * const array, size_t size)
   {
     cout << "Area rectangle: " << array[0]->getArea() << "\n";
-    rectangle_t frame = array[0]-> getFrameRect();
+    rectangle_t frame = array[0]->getFrameRect();
     cout << "rectangle frame width: " << frame.width << "\n";
     cout << "rectangle frame height: " << frame.height << "\n";
     cout << "rectangle frame position (x): " << frame.pos.x << "\n";
@@ -199,7 +199,7 @@ namespace madieva {
     cout << "\n";
 
     cout << "Area bubble: " << array[1]->getArea() << "\n";
-    frame = array[1]-> getFrameRect();
+    frame = array[1]->getFrameRect();
     cout << "bubble frame width: " << frame.width << "\n";
     cout << "bubble frame height: " << frame.height << "\n";
     cout << "bubble frame position (x): " << frame.pos.x << "\n";
@@ -207,7 +207,7 @@ namespace madieva {
     cout << "\n";
 
     cout << "Area ring: " << array[2]->getArea() << "\n";
-    frame = array[2]-> getFrameRect();
+    frame = array[2]->getFrameRect();
     cout << "ring frame width: " << frame.width << "\n";
     cout << "ring frame height: " << frame.height << "\n";
     cout << "ring frame position (x): " << frame.pos.x << "\n";
