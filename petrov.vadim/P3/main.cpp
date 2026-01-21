@@ -5,11 +5,11 @@
 
 namespace petrov
 {
-  std::istream& fill(std::istream& input, int* mtx, size_t rows, size_t cols);
+  bool fill(std::istream& input, int* mtx, size_t rows, size_t cols);
   int* copy(int* mtx, size_t rows, size_t cols);
   void lft_bot_cnt(std::ostream& output, int* mtx, size_t rows, size_t cols);
-  void vert_step_for_task1(int* mtx,size_t t,size_t b,size_t r,size_t l,size_t& plus_step,bool move_d,size_t cols);
-  void hor_step_for_task1(int* mtx,size_t t,size_t b,size_t r,size_t l,size_t& plus_step,bool move_r,size_t cols);
+  void vert_step_for_task1(int* mtx, size_t top, size_t bottom, size_t right, size_t left, size_t& plus_step, bool move_down, size_t cols);
+  void hor_step_for_task1(int* mtx, size_t top, size_t bottom, size_t right, size_t left, size_t& plus_step, bool move_right, size_t cols);
   void fll_inc_wav(std::ostream& output, int* mtx, size_t rows, size_t cols);
   void vert_step_for_task2(int* mtx, size_t col, size_t row_start, size_t row_end, size_t cols, size_t plus_step);
   void hor_step_for_task2(int* mtx, size_t row, size_t col_start, size_t col_end, size_t cols, size_t plus_step);
@@ -29,8 +29,7 @@ int* petrov::create_matrix(std::istream& in, size_t rows, size_t cols)
     return nullptr;
   }
 
-  petrov::fill(in, mtx, rows, cols);
-  if (!in)
+  if (!petrov::fill(in, mtx, rows, cols))
   {
     std::cerr << "BAD input\n";
     delete[] mtx;
@@ -59,47 +58,48 @@ int* petrov::copy(int* mtx, size_t rows, size_t cols)
   return copy;
 }
 
-std::istream& petrov::fill(std::istream& input, int* mtx, size_t rows, size_t cols)
+bool petrov::fill(std::istream& input, int* mtx, size_t rows, size_t cols)
 {
-  for(size_t i = 0; i < (rows * cols); ++i)
+  for (size_t i = 0; i < rows * cols; ++i)
   {
-    input >> mtx[i];
+    if (!(input >> mtx[i]))
+      return false;
   }
-  return input;
+  return true;
 }
 
-void petrov::vert_step_for_task1(int* mtx,size_t t,size_t b,size_t r,size_t l,size_t& plus_step,bool move_d,size_t cols)
+void petrov::vert_step_for_task1(int* mtx, size_t top, size_t bottom, size_t right, size_t left, size_t& plus_step, bool move_down, size_t cols)
 {
-  if (move_d)
+  if (move_down)
   {
-    for (size_t i = t; i <= b; ++i)
+    for (size_t i = top; i <= bottom; ++i)
     {
-      mtx[i * cols + l] += plus_step++;
+      mtx[i * cols + left] += plus_step++;
     }
   }
   else
   {
-    for (size_t i = b + 1; i-- > t;)
+    for (size_t i = bottom + 1; i-- > top;)
     {
-      mtx[i * cols + r] += plus_step++;
+      mtx[i * cols + right] += plus_step++;
     }
   }
 }
 
-void petrov::hor_step_for_task1(int* mtx,size_t t,size_t b,size_t r,size_t l,size_t& plus_step,bool move_r,size_t cols)
+void petrov::hor_step_for_task1(int* mtx, size_t top, size_t bottom, size_t right, size_t left, size_t& plus_step, bool move_right, size_t cols)
 {
-  if (move_r)
+  if (move_right)
   {
-    for (size_t i = l; i <= r; ++i)
+    for (size_t i = left; i <= right; ++i)
     {
-      mtx[b * cols + i] += plus_step++;
+      mtx[bottom * cols + i] += plus_step++;
     }
   }
   else
   {
-    for (size_t i = r + 1; i-- > l;)
+    for (size_t i = right + 1; i-- > left;)
     {
-      mtx[t * cols + i] += plus_step++;
+      mtx[top * cols + i] += plus_step++;
     }
   }
 }
@@ -216,6 +216,12 @@ int main(int argc, char** argv)
     if (rows * cols > MAX_SIZE)
     {
       std::cerr << "matrix invalid\n";
+      return 2;
+    }
+
+    if (!petrov::fill(input, static_buf, rows, cols))
+    {
+      std::cerr << "BAD input\n";
       return 2;
     }
 
