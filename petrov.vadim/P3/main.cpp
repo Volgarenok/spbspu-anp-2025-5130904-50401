@@ -8,8 +8,8 @@ namespace petrov
   std::istream& fill(std::istream& input, int* mtx, size_t rows, size_t cols);
   int* copy(int* mtx, size_t rows, size_t cols);
   void lft_bot_cnt(std::ostream& output, int* mtx, size_t rows, size_t cols);
-  void vert_step_for_task1(int* mtx, size_t top, size_t bottom, size_t right, size_t left, size_t& plus_step, bool move_down, size_t cols);
-  void hor_step_for_task1(int* mtx, size_t top, size_t bottom, size_t right, size_t left, size_t& plus_step, bool move_right, size_t cols);
+  void vert_step_for_task1(int* mtx,size_t t,size_t b,size_t r,size_t l,size_t& plus_step,bool move_d,size_t cols);
+  void hor_step_for_task1(int* mtx,size_t t,size_t b,size_t r,size_t l,size_t& plus_step,bool move_r,size_t cols);
   void fll_inc_wav(std::ostream& output, int* mtx, size_t rows, size_t cols);
   void vert_step_for_task2(int* mtx, size_t col, size_t row_start, size_t row_end, size_t cols, size_t plus_step);
   void hor_step_for_task2(int* mtx, size_t row, size_t col_start, size_t col_end, size_t cols, size_t plus_step);
@@ -68,38 +68,38 @@ std::istream& petrov::fill(std::istream& input, int* mtx, size_t rows, size_t co
   return input;
 }
 
-void petrov::vert_step_for_task1(int* mtx, size_t top, size_t bottom, size_t right, size_t left, size_t& plus_step, bool move_down, size_t cols)
+void petrov::vert_step_for_task1(int* mtx,size_t t,size_t b,size_t r,size_t l,size_t& plus_step,bool move_d,size_t cols)
 {
-  if (move_down)
+  if (move_d)
   {
-    for (size_t i = top; i <= bottom; ++i)
+    for (size_t i = t; i <= b; ++i)
     {
-      mtx[i * cols + left] += plus_step++;
+      mtx[i * cols + l] += plus_step++;
     }
   }
   else
   {
-    for (size_t i = bottom + 1; i-- > top;)
+    for (size_t i = b + 1; i-- > t;)
     {
-      mtx[i * cols + right] += plus_step++;
+      mtx[i * cols + r] += plus_step++;
     }
   }
 }
 
-void petrov::hor_step_for_task1(int* mtx, size_t top, size_t bottom, size_t right, size_t left, size_t& plus_step, bool move_right, size_t cols)
+void petrov::hor_step_for_task1(int* mtx,size_t t,size_t b,size_t r,size_t l,size_t& plus_step,bool move_r,size_t cols)
 {
-  if (move_right)
+  if (move_r)
   {
-    for (size_t i = left; i <= right; ++i)
+    for (size_t i = l; i <= r; ++i)
     {
-      mtx[bottom * cols + i] += plus_step++;
+      mtx[b * cols + i] += plus_step++;
     }
   }
   else
   {
-    for (size_t i = right + 1; i-- > left;)
+    for (size_t i = r + 1; i-- > l;)
     {
-      mtx[top * cols + i] += plus_step++;
+      mtx[t * cols + i] += plus_step++;
     }
   }
 }
