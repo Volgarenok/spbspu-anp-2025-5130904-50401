@@ -169,10 +169,10 @@ int main(int argc, char* argv[])
       return 0;
     }
 
-    
+
     const size_t maxStaticSize = 10000;
     int* matrix = nullptr;
-    
+
     if (num == 1)
     {
       if (rows * cols > maxStaticSize)
@@ -180,7 +180,7 @@ int main(int argc, char* argv[])
         std::cerr << "Matrix is too large for static array";
         return 2;
       }
-      
+
       matrix = burukov::allocateMatrix(rows, cols);
     }
     else
@@ -194,7 +194,7 @@ int main(int argc, char* argv[])
       return 2;
     }
 
-    
+
     if (!burukov::readMatrix(input, matrix, rows, cols))
     {
       burukov::deallocateMatrix(matrix);
