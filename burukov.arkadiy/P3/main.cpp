@@ -6,17 +6,22 @@
 
 namespace burukov
 {
-  int* createMatrix(size_t rows, size_t cols);
+  int* allocateMatrix(size_t rows, size_t cols);
+  void deallocateMatrix(int* matrix);
   int countLocalMinima(const int* matrix, size_t rows, size_t cols);
   int countLocalMaxima(const int* matrix, size_t rows, size_t cols);
   bool readMatrixElement(std::ifstream& input, int& value);
+  bool readMatrix(std::ifstream& input, int* matrix, size_t rows, size_t cols);
 }
 
-int* burukov::createMatrix(size_t rows, size_t cols)
+int* burukov::allocateMatrix(size_t rows, size_t cols)
 {
-  int* matrix = nullptr;
-  matrix = static_cast< int* >(malloc(rows * cols * sizeof(int)));
-  return matrix;
+  return static_cast< int* >(std::malloc(rows * cols * sizeof(int)));
+}
+
+void burukov::deallocateMatrix(int* matrix)
+{
+  std::free(matrix);
 }
 
 int burukov::countLocalMinima(const int* matrix, size_t rows, size_t cols)
@@ -82,11 +87,37 @@ bool burukov::readMatrixElement(std::ifstream& input, int& value)
   return true;
 }
 
+bool burukov::readMatrix(std::ifstream& input, int* matrix, size_t rows, size_t cols)
+{
+  for (size_t i = 0; i < rows; ++i)
+  {
+    for (size_t j = 0; j < cols; ++j)
+    {
+      int value = 0;
+      if (!readMatrixElement(input, value))
+      {
+        if (input.eof())
+        {
+          std::cerr << "Not enough elements for matrix";
+        }
+        else if (input.fail())
+        {
+          input.clear();
+          std::cerr << "Unexpected input format";
+        }
+        return false;
+      }
+      matrix[i * cols + j] = value;
+    }
+  }
+  return true;
+}
+
 int main(int argc, char* argv[])
 {
   if (argc != 4)
   {
-    const char* errorMsg = (argc < 4)? "Not enough arguments": "Too many arguments";
+    const char* errorMsg = (argc < 4) ? "Not enough arguments" : "Too many arguments";
     std::cerr << "Error: " << errorMsg;
     return 1;
   }
@@ -138,7 +169,10 @@ int main(int argc, char* argv[])
       return 0;
     }
 
+    
     const size_t maxStaticSize = 10000;
+    int* matrix = nullptr;
+    
     if (num == 1)
     {
       if (rows * cols > maxStaticSize)
@@ -146,90 +180,39 @@ int main(int argc, char* argv[])
         std::cerr << "Matrix is too large for static array";
         return 2;
       }
-
-      int matrix[maxStaticSize];
-      for (size_t i = 0; i < rows; ++i)
-      {
-        for (size_t j = 0; j < cols; ++j)
-        {
-          int value = 0;
-          if (!burukov::readMatrixElement(input, value))
-          {
-            if (input.eof())
-            {
-              std::cerr << "Not enough elements for matrix";
-            }
-            else if (input.fail())
-            {
-              input.clear();
-              std::cerr << "Unexpected input format";
-            }
-            return 2;
-          }
-          matrix[i * cols + j] = value;
-        }
-      }
-
-      const int resultMin = burukov::countLocalMinima(matrix, rows, cols);
-      const int resultMax = burukov::countLocalMaxima(matrix, rows, cols);
-      output << resultMin << '\n';
-      output << resultMax;
+      
+      matrix = burukov::allocateMatrix(rows, cols);
     }
     else
     {
-      int* matrix = burukov::createMatrix(rows, cols);
-      if (matrix == nullptr)
-      {
-        std::cerr << "Memory allocation failed";
-        return 2;
-      }
-
-      bool success = true;
-      const bool readCondition = success;
-      for (size_t i = 0; i < rows && readCondition; ++i)
-      {
-        for (size_t j = 0; j < cols && readCondition; ++j)
-        {
-          int value = 0;
-          if (!burukov::readMatrixElement(input, value))
-          {
-            if (input.eof())
-            {
-              std::cerr << "Not enough elements for matrix";
-            }
-            else if (input.fail())
-            {
-              input.clear();
-              std::cerr << "Unexpected input format";
-            }
-            success = false;
-          }
-          else
-          {
-            matrix[i * cols + j] = value;
-          }
-        }
-      }
-
-      if (success)
-      {
-        const int resultMin = burukov::countLocalMinima(matrix, rows, cols);
-        const int resultMax = burukov::countLocalMaxima(matrix, rows, cols);
-        output << resultMin << '\n';
-        output << resultMax<< '\n';
-      }
-
-      free(matrix);
-      if (!success)
-      {
-        return 2;
-      }
+      matrix = burukov::allocateMatrix(rows, cols);
     }
+
+    if (matrix == nullptr)
+    {
+      std::cerr << "Memory allocation failed";
+      return 2;
+    }
+
+    
+    if (!burukov::readMatrix(input, matrix, rows, cols))
+    {
+      burukov::deallocateMatrix(matrix);
+      return 2;
+    }
+
+    const int resultMin = burukov::countLocalMinima(matrix, rows, cols);
+    const int resultMax = burukov::countLocalMaxima(matrix, rows, cols);
+    output << resultMin << '\n';
+    output << resultMax;
+
+    burukov::deallocateMatrix(matrix);
   }
   catch (const std::exception& e)
   {
     std::cerr << "Exception: " << e.what();
     return 2;
   }
+
   return 0;
 }
