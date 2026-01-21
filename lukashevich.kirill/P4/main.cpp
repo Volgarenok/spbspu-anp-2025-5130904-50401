@@ -124,7 +124,7 @@ namespace lukashevich {
         if (pos + 1 >= resultSize) {
           return -1;
         }
-        result[pos++] = static_cast<char>('a' + i);
+        result[pos++] = static_cast< char >('a' + i);
       }
     }
     result[pos] = '\0';
