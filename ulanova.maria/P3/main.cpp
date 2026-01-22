@@ -163,7 +163,7 @@ int main(int argc, char* argv[])
   try {
     matrix = ulanova::makeMatrix(isFixedSize, elements, fixedStorage);
   } catch (const std::exception& e)
-  }
+  {
       std::cerr << "Error: " << e.what() << '\n';
       return 4;
   }
