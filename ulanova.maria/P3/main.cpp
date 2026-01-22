@@ -18,12 +18,13 @@ namespace ulanova {
       return fixedStorage;
     } else
     {
-      int* matrix = new int[elements];
-      if (!matrix)
+      try
       {
-        throw std::bad_alloc{};
+        return new int[elements];
+      } catch (const std::bad_alloc&e)
+      {
+        throw std::runtime_error("Error: Memory failed");
       }
-      return matrix;
     }
   }
   bool readMatrix(std::ifstream& input,int* matrix, size_t rows, size_t cols)
