@@ -56,7 +56,6 @@ size_t hvostov::getStrLength(char ** str, size_t size)
   return length;
 }
 
-
 char * hvostov::copyStr(char * str)
 {
   size_t len = 0;
@@ -142,7 +141,7 @@ char ** hvostov::getStr(std::istream & in, size_t & size, int (*divider)(int))
   char ** str = nullptr;
   char * word = nullptr;
   try {
-    str = new char*[size];
+    str = new char*[size]();
     word = new char[word_len]();
   } catch (const std::bad_alloc &) {
     delete[] str;
@@ -202,6 +201,11 @@ char ** hvostov::getStr(std::istream & in, size_t & size, int (*divider)(int))
         return nullptr;
       }
     }
+  }
+  if (word_index == 0 && str_index == 0) {
+    deleteStr(str, str_index);
+    delete[] word;
+    return nullptr;
   }
   if (word[0] != '\0') {
     hvostov::appendStr(str, str_index, word, word_index);
