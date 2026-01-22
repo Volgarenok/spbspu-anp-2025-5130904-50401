@@ -3,37 +3,46 @@
 #include <cmath>
 
 namespace hvostov {
-  struct point_t {
+  struct point_t
+  {
     double x, y;
   };
-  struct rectangle_t {
+  struct rectangle_t
+  {
     double width, height;
     point_t center;
   };
-  class Shape {
+  class Shape
+  {
     public:
       virtual ~Shape() = default;
+      void move(point_t center);
+      void move(double x, double y);
+      void scale(double k);
       virtual double getArea() const = 0;
       virtual rectangle_t getFrameRect() const = 0;
-      virtual void move(point_t center) = 0;
-      virtual void move(double x, double y) = 0;
-      virtual void scale(double k) = 0;
+    private:
+      virtual void doMove(point_t center) = 0;
+      virtual void doMove(double x, double y) = 0;
+      virtual void doScale(double k) = 0;
   };
-  class Rectangle: public Shape {
+  class Rectangle: public Shape
+  {
     public:
       Rectangle(double width, double height, point_t center);
       double getArea() const override;
       rectangle_t getFrameRect() const override;
-      void move(point_t center) override;
-      void move(double x, double y) override;
-      void scale(double k) override;
     private:
+      void doMove(point_t center) override;
+      void doMove(double x, double y) override;
+      void doScale(double k) override;
       double width_, height_;
       point_t center_;
   };
-  class Polygon: public Shape {
+  class Polygon: public Shape
+  {
     public:
-      Polygon(point_t * vertices, size_t vertex_count);
+      Polygon(const point_t * vertices, size_t vertex_count);
       Polygon(const Polygon & polygon);
       Polygon(Polygon && polygon);
       ~Polygon() override;
@@ -41,31 +50,18 @@ namespace hvostov {
       Polygon & operator=(Polygon && polygon);
       double getArea() const override;
       rectangle_t getFrameRect() const override;
-      void move(point_t center) override;
-      void move(double x, double y) override;
-      void scale(double k) override;
     private:
+      void doMove(point_t center) override;
+      void doMove(double x, double y) override;
+      void doScale(double k) override;
       point_t * vertices_;
       point_t center_;
       size_t vertex_count_;
   };
-  class Complexquad: public Shape {
+  class Complexquad: public Polygon
+  {
     public:
-      Complexquad(point_t * vertices);
-      Complexquad(const Complexquad & complexquad);
-      Complexquad(Complexquad && complexquad);
-      ~Complexquad() override;
-      Complexquad & operator=(const Complexquad & complexquad);
-      Complexquad & operator=(Complexquad && complexquad);
-      double getArea() const override;
-      rectangle_t getFrameRect() const override;
-      void move(point_t center) override;
-      void move(double x, double y) override;
-      void scale(double k) override;
-    private:
-      const size_t VERTEX_COUNT_ = 4;
-      point_t * vertices_;
-      point_t center_;
+      Complexquad(const point_t * vertices);
   };
 
   double getAreaByVertices(const point_t * vertices, size_t vertex_count);
@@ -92,10 +88,7 @@ int main()
     shapes[0] = new hvostov::Rectangle(3.3, 4.6, {5.7, 5.8});
     shapes[1] = new hvostov::Complexquad(complexquad_vertices);
     shapes[2] = new hvostov::Polygon(polygon_vertices, 5);
-  } catch (const std::bad_alloc & e) {
-    std::cerr << e.what() << "\n";
-    return 2;
-  } catch (const std::invalid_argument & e) {
+  } catch (const std::exception & e) {
     std::cerr << e.what() << "\n";
     return 1;
   }
@@ -105,9 +98,9 @@ int main()
   std::cin >> k;
   if (!std::cin) {
     std::cerr << "Invalid input!\n";
-    return 1;
-  } else if (k < 0) {
-    std::cerr << "Scale needs to be positive!\n";
+    delete[] polygon_vertices;
+    delete[] complexquad_vertices;
+    hvostov::deleteShapes(shapes, shapes_count);
     return 1;
   }
   hvostov::printInformationAboutShapes(out, shapes, shapes_count);
@@ -120,12 +113,34 @@ int main()
   hvostov::deleteShapes(shapes, shapes_count);
 }
 
+void hvostov::Shape::move(point_t center)
+{
+  doMove(center);
+}
+
+void hvostov::Shape::move(double x, double y)
+{
+  doMove(x, y);
+}
+
+void hvostov::Shape::scale(double k)
+{
+  if (k <= 0.0) {
+    throw std::invalid_argument("Scale factor must be positive");
+  }
+  doScale(k);
+}
+
 hvostov::Rectangle::Rectangle(double width, double height, point_t center):
   Shape(),
   width_(width),
   height_(height),
   center_(center)
-{}
+{
+  if (width_ <= 0.0 || height_ <= 0.0) {
+    throw std::invalid_argument("Rectangle width and height mus be positive!");
+  }
+}
 
 double hvostov::Rectangle::getArea() const
 {
@@ -134,31 +149,27 @@ double hvostov::Rectangle::getArea() const
 
 hvostov::rectangle_t hvostov::Rectangle::getFrameRect() const
 {
-  rectangle_t frame;
-  frame.height = height_;
-  frame.width = width_;
-  frame.center = center_;
-  return frame;
+  return {width_, height_, center_};
 }
 
-void hvostov::Rectangle::move(point_t center)
+void hvostov::Rectangle::doMove(point_t center)
 {
   center_ = center;
 }
 
-void hvostov::Rectangle::move(double x, double y)
+void hvostov::Rectangle::doMove(double x, double y)
 {
   center_.x += x;
   center_.y += y;
 }
 
-void hvostov::Rectangle::scale(double k)
+void hvostov::Rectangle::doScale(double k)
 {
   width_ *= k;
   height_ *= k;
 }
 
-hvostov::Polygon::Polygon(point_t * vertices, size_t vertex_count):
+hvostov::Polygon::Polygon(const point_t * vertices, size_t vertex_count):
   Shape(),
   vertices_(new point_t[vertex_count]),
   vertex_count_(vertex_count),
@@ -203,13 +214,14 @@ hvostov::Polygon & hvostov::Polygon::operator=(const Polygon & polygon)
   if (this == &polygon) {
     return *this;
   }
+  point_t * new_vertices = new point_t[polygon.vertex_count_];
+  for (size_t i = 0; i < polygon.vertex_count_; i++) {
+    new_vertices[i] = polygon.vertices_[i];
+  }
   delete[] vertices_;
+  vertices_ = new_vertices;
   vertex_count_ = polygon.vertex_count_;
   center_ = polygon.center_;
-  vertices_ = new point_t[vertex_count_];
-  for (size_t i = 0; i < vertex_count_; i++) {
-    vertices_[i] = polygon.vertices_[i];
-  }
   return *this;
 }
 
@@ -225,8 +237,7 @@ hvostov::Polygon & hvostov::Polygon::operator=(Polygon && polygon)
 
 double hvostov::Polygon::getArea() const
 {
-  double s = getAreaByVertices(vertices_, vertex_count_);
-  return s;
+  return getAreaByVertices(vertices_, vertex_count_);
 }
 
 hvostov::rectangle_t hvostov::Polygon::getFrameRect() const
@@ -234,7 +245,7 @@ hvostov::rectangle_t hvostov::Polygon::getFrameRect() const
   return getFrameRectWithVertices(vertices_, vertex_count_);
 }
 
-void hvostov::Polygon::move(double x, double y)
+void hvostov::Polygon::doMove(double x, double y)
 {
   center_.x += x;
   center_.y += y;
@@ -244,123 +255,28 @@ void hvostov::Polygon::move(double x, double y)
   }
 }
 
-void hvostov::Polygon::move(point_t center)
+void hvostov::Polygon::doMove(point_t center)
 {
   double x = center.x - center_.x;
   double y = center.y - center_.y;
-  move(x, y);
+  doMove(x, y);
 }
 
-void hvostov::Polygon::scale(double k)
+void hvostov::Polygon::doScale(double k)
 {
-  if (k <= 0) {
-    throw std::invalid_argument("Scale must be positive");
-  }
   for (size_t i = 0; i < vertex_count_; i++) {
     vertices_[i].x = center_.x + k * (vertices_[i].x - center_.x);
     vertices_[i].y = center_.y + k * (vertices_[i].y - center_.y);
   }
 }
 
-hvostov::Complexquad::Complexquad(point_t * vertices):
-  Shape(),
-  vertices_(new point_t[VERTEX_COUNT_]),
-  center_(getCenter(vertices, VERTEX_COUNT_))
+hvostov::Complexquad::Complexquad(const point_t * vertices):
+  Polygon(vertices, 4)
 {
-  for (size_t i = 0; i < VERTEX_COUNT_; i++) {
-    vertices_[i] = vertices[i];
-  }
-}
-
-hvostov::Complexquad::Complexquad(const Complexquad & complexquad):
-  Shape(),
-  vertices_(new point_t[VERTEX_COUNT_]),
-  center_(complexquad.center_)
-{
-  for (size_t i = 0; i < VERTEX_COUNT_; i++) {
-    vertices_[i] = complexquad.vertices_[i];
-  }
-}
-
-hvostov::Complexquad::Complexquad(Complexquad && complexquad):
-  Shape(),
-  vertices_(complexquad.vertices_),
-  center_(complexquad.center_)
-{
-  complexquad.vertices_ = nullptr;
-}
-
-hvostov::Complexquad::~Complexquad()
-{
-  delete[] vertices_;
-}
-
-hvostov::Complexquad & hvostov::Complexquad::operator=(const Complexquad & complexquad)
-{
-  if (this == &complexquad) {
-    return *this;
-  }
-  delete[] vertices_;
-  center_ = complexquad.center_;
-  for (size_t i = 0; i < VERTEX_COUNT_; i++) {
-    vertices_[i] = complexquad.vertices_[i];
-  }
-  return *this;
-}
-
-hvostov::Complexquad & hvostov::Complexquad::operator=(Complexquad && complexquad)
-{
-  delete[] vertices_;
-  center_ = complexquad.center_;
-  vertices_ = complexquad.vertices_;
-  complexquad.vertices_ = nullptr;
-  return *this;
-}
-
-double hvostov::Complexquad::getArea() const
-{
-  double s = getAreaByVertices(vertices_, VERTEX_COUNT_);
-  return s;
-}
-
-hvostov::rectangle_t hvostov::Complexquad::getFrameRect() const
-{
-  return getFrameRectWithVertices(vertices_, VERTEX_COUNT_);
-}
-
-void hvostov::Complexquad::move(double x, double y)
-{
-  center_.x += x;
-  center_.y += y;
-  for (size_t i = 0; i < VERTEX_COUNT_; i++) {
-    vertices_[i].x += x;
-    vertices_[i].y += y;
-  }
-}
-
-void hvostov::Complexquad::move(point_t center)
-{
-  double x = center.x - center_.x;
-  double y = center.y - center_.y;
-  move(x, y);
-}
-
-void hvostov::Complexquad::scale(double k)
-{
-  if (k <= 0) {
-    throw std::invalid_argument("Scale must be positive");
-  }
-  for (size_t i = 0; i < VERTEX_COUNT_; i++) {
-    vertices_[i].x = center_.x + k * (vertices_[i].x - center_.x);
-    vertices_[i].y = center_.y + k * (vertices_[i].y - center_.y);
-  }
 }
 
 void hvostov::scaleFromPoint(Shape & shape, double k, const point_t & scale_point)
 {
-  if (k <= 0) {
-    throw std::invalid_argument("Scale must be positive");
-  }
   point_t center = shape.getFrameRect().center;
   point_t new_center;
   new_center.x = scale_point.x + k * (center.x - scale_point.x);
