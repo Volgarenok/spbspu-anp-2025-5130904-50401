@@ -1,34 +1,26 @@
 #include <iostream>
 #include <fstream>
-
+#include <stdexcept>
 namespace ulanova {
-  bool checkFixedSizeLimit (size_t elements, bool& hadError)
+  bool checkFixedSizeLimit (size_t elements)
   {
     if (elements > 10000)
     {
-      std::cerr << "Error: Matrix maximum size (10000)\n";
-      hadError = true;
-      return false;
+      throw std::runtime_error("Error:Matrix maiximum size 10000");
     }
-    return true;
   }
-  int* makeMatrix(bool isFixedsize, size_t elements, int* fixedStorage, bool& hadError)
+  int* makeMatrix(bool isFixedsize, size_t elements, int* fixedStorage)
   {
     if (isFixedsize)
     {
-      if (!checkFixedSizeLimit(elements, hadError))
-      {
-        return nullptr;
-      }
+      checkFixedSizeLimit(elements);
       return fixedStorage;
     } else
     {
       int* matrix = new int[elements];
       if (!matrix)
       {
-        std::cerr << "Error: Memory allocation failed\n";
-        hadError = true;
-        return nullptr;
+        throw std::bad_alloc("Error: Memory allocation failed");
       }
       return matrix;
     }
@@ -166,11 +158,12 @@ int main(int argc, char* argv[])
   }
   size_t elements = rows * cols;
   int fixedStorage[10000] = {};
-  bool hadError = false;
-  int* matrix = ulanova::makeMatrix(isFixedSize, elements, fixedStorage, hadError);
-  if (hadError || !matrix)
-  {
-    return 4;
+  try {
+    int* matrix = ulanova::makeMatrix(isFixedSize, elements, fixedStorage);
+  } catch (const std::exception& e)
+  }
+      std::cerr << "Error: " << e.what() << '\n';
+      return 4;
   }
   if (!ulanova::readMatrix(input, matrix, rows, cols))
   {
