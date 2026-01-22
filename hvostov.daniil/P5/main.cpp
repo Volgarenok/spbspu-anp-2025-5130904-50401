@@ -92,7 +92,8 @@ int main()
     std::cerr << e.what() << "\n";
     return 1;
   }
-  double k = 0.0;
+  hvostov::printInformationAboutShapes(out, shapes, shapes_count);
+  double k = 1.0;
   hvostov::point_t scale_point;
   std::cin >> scale_point.x >> scale_point.y;
   std::cin >> k;
@@ -103,9 +104,16 @@ int main()
     hvostov::deleteShapes(shapes, shapes_count);
     return 1;
   }
-  hvostov::printInformationAboutShapes(out, shapes, shapes_count);
-  for (size_t i = 0; i < shapes_count; i++) {
-    hvostov::scaleFromPoint(*(shapes[i]), k, scale_point);
+  try {
+    for (size_t i = 0; i < shapes_count; i++) {
+      hvostov::scaleFromPoint(*(shapes[i]), k, scale_point);
+    }
+  } catch (const std::invalid_argument & e) {
+    std::cerr << e.what() << "\n";
+    delete[] polygon_vertices;
+    delete[] complexquad_vertices;
+    hvostov::deleteShapes(shapes, shapes_count);
+    return 1;
   }
   hvostov::printInformationAboutShapes(out, shapes, shapes_count);
   delete[] polygon_vertices;
@@ -138,7 +146,7 @@ hvostov::Rectangle::Rectangle(double width, double height, point_t center):
   center_(center)
 {
   if (width_ <= 0.0 || height_ <= 0.0) {
-    throw std::invalid_argument("Rectangle width and height mus be positive!");
+    throw std::invalid_argument("Rectangle width and height must be positive!");
   }
 }
 
