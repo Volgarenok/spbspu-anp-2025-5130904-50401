@@ -165,27 +165,17 @@ namespace madieva {
 
   rectangle_t totalGetFrameRect(Shape * const * const array, size_t size)
   {
-    double width = array[0]->getFrameRect().width;
-    double height = array[0]->getFrameRect().height;
-    double posx = array[0]->getFrameRect().pos.x;
-    double posy = array[0]->getFrameRect().pos.y;
-    double left_x = posx - (width / 2);
-    double right_x = posx + (width / 2);
-    double bottom_y = posy - (height / 2);
-    double top_y = posy + (height / 2);
-    double minx = left_x;
-    double maxx = right_x;
-    double miny = bottom_y;
-    double maxy = top_y;
-    for (size_t i = 0; i < size; ++i) {
-      width = array[i]->getFrameRect().width;
-      height = array[i]->getFrameRect().height;
-      posx = array[i]->getFrameRect().pos.x;
-      posy = array[i]->getFrameRect().pos.y;
-      left_x = posx - (width / 2);
-      right_x = posx + (width / 2);
-      bottom_y = posy - (height / 2);
-      top_y = posy + (height / 2);
+    rectangle_t frame1 = array[0]->getFrameRect();
+    double minx = frame1.pos.x - (frame1.width / 2);
+    double maxx = frame1.pos.x + (frame1.width / 2);
+    double miny = frame1.pos.y - (frame1.height / 2);
+    double maxy = frame1.pos.y + (frame1.height / 2);
+    for (size_t i = 1; i < size; ++i) {
+      rectangle_t frame = array[i]->getFrameRect();
+      double left_x = frame.pos.x - (frame.width / 2);
+      double right_x = frame.pos.x + (frame.width / 2);
+      double bottom_y = frame.pos.y - (frame.height / 2);
+      double top_y = frame.pos.y + (frame.height / 2);
       if (left_x < minx) {
         minx = left_x;
       }
