@@ -35,12 +35,6 @@ void addNums(const char * str1, const char * str2, size_t size1, size_t size2, c
   }
   res[i] = '\0';
 }
-void readingAnArray(const char * array, size_t size)
-{
-  for (size_t i = 0; i < size - 1; i++) {
-    std::cout << array[i];
-  }
-}
 int main() {
   int const max_size = 256;
   char str1[max_size] = {};
@@ -48,7 +42,7 @@ int main() {
   size_t i = 0;
   while (std::cin.get(a) && a != '\n') {
     if (i >= max_size - 1) {
-        return 2;
+      return 2;
     }
     str1[i] = a;
     i++;
@@ -67,7 +61,7 @@ int main() {
     return 2;
   }
   mergeTwoAlternatingLines(str1, str2, size, res_two_merge);
-  readingAnArray(res_two_merge, size);
+  std::cout << res_two_merge;
   std::cout << "\n";
   free(res_two_merge);
   size_t num_of_digits = 0;
@@ -84,7 +78,7 @@ int main() {
     return 2;
   }
   addNums(str1, str2, i, size2, res_add_nums);
-  readingAnArray(res_add_nums, length_array);
+  std::cout << res_add_nums;
   std::cout << "\n";
   free(res_add_nums);
   return 0;
