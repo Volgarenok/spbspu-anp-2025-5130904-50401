@@ -55,8 +55,8 @@ namespace hvostov {
       void doMove(double x, double y) override;
       void doScale(double k) override;
       point_t * vertices_;
-      point_t center_;
       size_t vertex_count_;
+      point_t center_;
   };
   class Complexquad: public Polygon
   {
