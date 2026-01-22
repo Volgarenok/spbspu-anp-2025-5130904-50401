@@ -10,7 +10,7 @@ namespace madieva {
     point_t pos;
   };
   class Shape {
-    public:
+  public:
     virtual double getArea() = 0;
     virtual rectangle_t getFrameRect() = 0;
     virtual void move(point_t a) = 0;
@@ -19,11 +19,11 @@ namespace madieva {
     virtual ~Shape() = default;
   };
   class Rectangle: public Shape {
-    double width;
-    double height;
-    point_t centre;
-    public:
-    Rectangle(double width_, double height_, point_t centre_);
+    double width_;
+    double height_;
+    point_t centre_;
+  public:
+    Rectangle(double width, double height, point_t centre);
     double getArea() override;
     rectangle_t getFrameRect() override;
     void move(point_t a) override;
@@ -32,10 +32,10 @@ namespace madieva {
     ~Rectangle() = default;
   };
   class Bubble: public Shape {
-    double radius;
-    point_t bottom;
-    public:
-    Bubble(double radius_, point_t bottom_);
+    double radius_;
+    point_t bottom_;
+  public:
+    Bubble(double radius, point_t bottom);
     double getArea() override;
     rectangle_t getFrameRect() override;
     void move(point_t a) override;
@@ -44,11 +44,11 @@ namespace madieva {
     ~Bubble() = default;
   };
   class Ring: public Shape {
-    double big_radius;
-    double small_radius;
-    point_t centre;
-    public:
-    Ring(double radius1, double radius2, point_t centre_);
+    double big_radius_;
+    double small_radius_;
+    point_t centre_;
+  public:
+    Ring(double radius1, double radius2, point_t centre);
     double getArea() override;
     rectangle_t getFrameRect() override;
     void move(point_t a) override;
@@ -57,96 +57,96 @@ namespace madieva {
     ~Ring() = default;
   };
   const double pi = 3.14;
-  Rectangle::Rectangle(double width_, double height_, point_t centre_):
-    Shape(), width(width_), height(height_), centre(centre_)
+  Rectangle::Rectangle(double width, double height, point_t centre):
+    Shape(), width_(width), height_(height), centre_(centre)
   {
-    if (width <= 0 || height <= 0) {
+    if (width_ <= 0 || height_ <= 0) {
       throw std::invalid_argument("Incorrect rectangle size");
     }
   }
   double Rectangle::getArea()
   {
-    return width * height;
+    return width_ * height_;
   }
   rectangle_t Rectangle::getFrameRect()
   {
-    return {width, height, centre};
+    return {width_, height_, centre_};
   }
   void Rectangle::move(point_t a)
   {
-    centre = a;
+    centre_ = a;
   }
   void Rectangle::move(double dx, double dy)
   {
-    centre = {centre.x + dx, centre.y + dy};
+    centre_ = {centre_.x + dx, centre_.y + dy};
   }
   void Rectangle::scale(double ratio)
   {
-    width = width * ratio;
-    height = height * ratio;
+    width_ = width_ * ratio;
+    height_ = height_ * ratio;
   }
-  Bubble::Bubble(double radius_, point_t bottom_):
-    Shape(), radius(radius_), bottom(bottom_)
+  Bubble::Bubble(double radius, point_t bottom):
+    Shape(), radius_(radius), bottom_(bottom)
   {
-    if (radius <= 0) {
+    if (radius_ <= 0) {
       throw std::invalid_argument("Incorrect bubble size");
     }
   }
   double Bubble::getArea()
   {
-    return pi * radius * radius;
+    return pi * radius_ * radius_;
   }
   rectangle_t Bubble::getFrameRect()
   {
-    point_t centre{bottom.x, bottom.y + radius};
-    return {radius * 2, radius * 2, centre};
+    point_t centre{bottom_.x, bottom_.y + radius_};
+    return {radius_ * 2, radius_ * 2, centre};
   }
   void Bubble::move(point_t a)
   {
-    bottom = a;
+    bottom_ = a;
   }
   void Bubble::move(double dx, double dy)
   {
-    bottom = {bottom.x + dx, bottom.y + dy};
+    bottom_ = {bottom_.x + dx, bottom_.y + dy};
   }
   void Bubble::scale(double ratio)
   {
-    point_t centre{bottom.x, bottom.y + radius};
-    radius *= ratio;
-    bottom = {centre.x, centre.y - radius};
+    point_t centre{bottom_.x, bottom_.y + radius_};
+    radius_ *= ratio;
+    bottom_ = {centre.x, centre.y - radius_};
   }
   Ring::Ring(double radius1, double radius2, point_t centre_):
     Shape(),
-    big_radius(radius1 > radius2 ? radius1 : radius2),
-    small_radius(radius1 < radius2 ? radius1 : radius2),
-    centre(centre_)
+    big_radius_(radius1 > radius2 ? radius1 : radius2),
+    small_radius_(radius1 < radius2 ? radius1 : radius2),
+    centre_(centre_)
   {
-    if (big_radius <= 0 || small_radius <= 0 || big_radius == small_radius) {
+    if (big_radius_ <= 0 || small_radius_ <= 0 || big_radius_ == small_radius_) {
       throw std::invalid_argument("Incorrect ring size");
     }
   }
   double Ring::getArea()
   {
-    double big_area = pi * big_radius * big_radius;
-    double small_area = pi * small_radius * small_radius;
+    double big_area = pi * big_radius_ * big_radius_;
+    double small_area = pi * small_radius_ * small_radius_;
     return big_area - small_area;
   }
   rectangle_t Ring::getFrameRect()
   {
-    return {big_radius * 2, big_radius * 2, centre};
+    return {big_radius_ * 2, big_radius_ * 2, centre_};
   }
   void Ring::move(point_t a)
   {
-    centre = a;
+    centre_ = a;
   }
   void Ring::move(double dx, double dy)
   {
-    centre = {centre.x + dx, centre.y + dy};
+    centre_ = {centre_.x + dx, centre_.y + dy};
   }
   void Ring::scale(double ratio)
   {
-    big_radius *= ratio;
-    small_radius *= ratio;
+    big_radius_ *= ratio;
+    small_radius_ *= ratio;
   }
 
   rectangle_t totalGetFrameRect(Shape * const * const array, size_t size)
