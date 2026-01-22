@@ -8,6 +8,7 @@ namespace ulanova {
     {
       throw std::runtime_error("Error:Matrix maiximum size 10000");
     }
+    return true;
   }
   int* makeMatrix(bool isFixedsize, size_t elements, int* fixedStorage)
   {
@@ -20,7 +21,7 @@ namespace ulanova {
       int* matrix = new int[elements];
       if (!matrix)
       {
-        throw std::bad_alloc("Error: Memory allocation failed");
+        throw std::bad_alloc{};
       }
       return matrix;
     }
@@ -158,8 +159,9 @@ int main(int argc, char* argv[])
   }
   size_t elements = rows * cols;
   int fixedStorage[10000] = {};
+  int* matrix = nullptr;
   try {
-    int* matrix = ulanova::makeMatrix(isFixedSize, elements, fixedStorage);
+    matrix = ulanova::makeMatrix(isFixedSize, elements, fixedStorage);
   } catch (const std::exception& e)
   }
       std::cerr << "Error: " << e.what() << '\n';
