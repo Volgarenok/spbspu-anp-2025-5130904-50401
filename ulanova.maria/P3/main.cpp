@@ -27,19 +27,22 @@ namespace ulanova {
       }
     }
   }
-  bool readMatrix(std::ifstream& input,int* matrix, size_t rows, size_t cols)
+  size_t readMatrix(std::ifstream& input,int* matrix, size_t rows, size_t cols)
   {
+    size_t count = 0;
     for (size_t i = 0; i < rows; ++i)
     {
       for (size_t j = 0; j < cols; ++j)
       {
-        if (!(input >> matrix[i * cols + j]))
+        if (input >> matrix[i * cols + j])
         {
-          return false;
+          count++;
+        } else {
+          return count;
         }
       }
     }
-    return true;
+    return count;
   }
   size_t countSaddlePoints(const int* matrix, size_t rows, size_t cols)
   {
@@ -171,7 +174,8 @@ int main(int argc, char* argv[])
       std::cerr << "Error: " << e.what() << '\n';
       return 4;
   }
-  if (!ulanova::readMatrix(input, matrix, rows, cols))
+  size_t readElements = ulanova::readMatrix(input,matrix,rows,cols);
+  if (readElements != elements)
   {
     std::cerr << "Error: Failed to read matrix data\n";
     if (!isFixedSize)
