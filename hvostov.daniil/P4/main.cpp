@@ -56,16 +56,6 @@ size_t hvostov::getStrLength(char ** str, size_t size)
   return length;
 }
 
-char * hvostov::copyStr(char * str, size_t len)
-{
-  char * copy = new char[len + 1];
-  size_t i = 0;
-  for (; i < len; i++) {
-    copy[i] = str[i];
-  }
-  copy[i] = '\0';
-  return copy;
-}
 
 char * hvostov::copyStr(char * str)
 {
@@ -127,6 +117,17 @@ void hvostov::extendStr(char ** str, size_t & size)
   *str = new_str;
 }
 
+char * hvostov::copyStr(char * str, size_t len)
+{
+  char * copy = new char[len + 1];
+  size_t i = 0;
+  for (; i < len; i++) {
+    copy[i] = str[i];
+  }
+  copy[i] = '\0';
+  return copy;
+}
+
 void hvostov::appendStr(char ** str, size_t & size, char * word, size_t len)
 {
   char * word_copy = hvostov::copyStr(word, len);
@@ -145,6 +146,7 @@ char ** hvostov::getStr(std::istream & in, size_t & size, int (*divider)(int))
     word = new char[word_len]();
   } catch (const std::bad_alloc &) {
     delete[] str;
+    delete[] word;
     return nullptr;
   }
   bool is_skipws = in.flags() & std::ios_base::skipws;
@@ -165,14 +167,18 @@ char ** hvostov::getStr(std::istream & in, size_t & size, int (*divider)(int))
         hvostov::appendStr(str, str_index, word, word_index);
       } catch (const std::bad_alloc & e) {
         hvostov::deleteStr(str, str_index);
+        delete[] word;
         return nullptr;
       }
+      delete[] word;
+      word = nullptr;
       word_len = start_word_len;
       word_index = 0;
       try {
         word = new char[word_len]();
       } catch (const std::bad_alloc &) {
         hvostov::deleteStr(str, str_index);
+        delete[] word;
         return nullptr;
       }
       is_previous_was_space = true;
@@ -205,6 +211,7 @@ char ** hvostov::getStr(std::istream & in, size_t & size, int (*divider)(int))
     hvostov::resizeStr(&str, str_index, str_index + 1);
   } catch (const std::bad_alloc &) {
     hvostov::deleteStr(str, str_index);
+    delete[] word;
     return nullptr;
   }
   if (is_skipws) {
@@ -212,6 +219,7 @@ char ** hvostov::getStr(std::istream & in, size_t & size, int (*divider)(int))
   }
   if (!in) {
     hvostov::deleteStr(str, str_index);
+    delete[] word;
     return nullptr;
   }
   delete[] word;
