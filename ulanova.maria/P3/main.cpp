@@ -2,14 +2,22 @@
 #include <fstream>
 
 namespace ulanova {
+  bool checkFixedSizeLimit (size_t elements, bool& hadError)
+  {
+    if (elements > 10000)
+    {
+      std::cerr << "Error: Matrix maximum size (10000)\n";
+      hadError = true;
+      return false;
+    }
+    return true;
+  }
   int* makeMatrix(bool isFixedsize, size_t elements, int* fixedStorage, bool& hadError)
   {
     if (isFixedsize)
     {
-      if (elements > 10000)
+      if (!checkFixedSizeLimit(elements, hadError))
       {
-        std::cerr << "Error: Matrix maximum size (10000)\n";
-        hadError = true;
         return nullptr;
       }
       return fixedStorage;
