@@ -330,6 +330,7 @@ int main()
     delete figures[0];
     delete figures[1];
     delete figures[2];
+
     return 2;
   }
   catch (const std::invalid_argument& e)
