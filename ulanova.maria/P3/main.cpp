@@ -29,12 +29,15 @@ namespace ulanova {
   }
   bool readMatrix(std::ifstream& input,int* matrix, size_t rows, size_t cols)
   {
-      for (size_t i = 0; i < rows; ++i) {
-        for (size_t j = 0; j < cols; ++j) {
-            if (!(input >> matrix[i * cols + j])) {
-                return false;
-            }
+    for (size_t i = 0; i < rows; ++i)
+    {
+      for (size_t j = 0; j < cols; ++j)
+      {
+        if (!(input >> matrix[i * cols + j]))
+        {
+          return false;
         }
+      }
     }
     return true;
   }
