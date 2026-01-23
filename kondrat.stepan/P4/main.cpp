@@ -92,7 +92,7 @@ namespace kondrat
 
       if (size >= cap - 1)
       {
-        char* bigger = expand_str(buffer, size, cap);
+        char * bigger = expand_str(buffer, size, cap);
         if (!bigger)
         {
           delete[] buffer;
@@ -110,7 +110,7 @@ namespace kondrat
 
     buffer[size] = '\0';
 
-    if(is_skipws)
+    if (is_skipws)
     {
       in >> std::skipws;
     }
@@ -207,7 +207,7 @@ int main()
 
   size_t size_str_uni_two = size + second_len + 1;
 
-  char* result_uni_two = kondrat::create_str(size_str_uni_two);
+  char * result_uni_two = kondrat::create_str(size_str_uni_two);
   if (!result_uni_two)
   {
     delete[] str;
