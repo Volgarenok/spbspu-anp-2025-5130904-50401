@@ -1,96 +1,139 @@
 #include <iostream>
+#include <memory>
+#include <cstddef>
 #include <fstream>
-#include <algorithm>
-#include <cstdlib>
+#include <locale>
 
 namespace petrov
 {
-  bool fill_massive(size_t r, size_t c, std::ifstream& in, int* mtx)
+  int* make_mtx(std::ifstream& in, size_t r, size_t c, char t, int* statmtx);
+  void fll_inc_way(std::ofstream& ou, const int* mtx, size_t r, size_t c);
+  void cnt_nzr_dig(std::ofstream& ou, int* mtx, size_t r, size_t c);
+  void write_output(std::ofstream& ou, size_t r, const int* mtx);
+  void reform(size_t d, size_t r, int* mtx);
+  void count_diagonal(size_t r, size_t& s, size_t c, const int* mtx);
+  void fill_massive(size_t r, size_t c, std::ifstream& in, int* mtx);
+}
+
+void petrov::fill_massive(size_t r, size_t c, std::ifstream& in, int* mtx)
+{
+  int q;
+  for (size_t i = 0; i < r; ++i)
   {
-    int q = 0;
-    size_t n = (r < c) ? r : c;
+    for (size_t j = 0; j < c; ++j)
+    {
+      if (in.eof())
+      {
+        throw std::logic_error("err\n");
+      }
+      if (i < std::min(r, c) && j < std::min(r, c))
+      {
+        in >> mtx[i * std::min(r, c) + j];
+      }
+      else
+      {
+        in >> q;
+      }
+    }
+  }
+}
+
+int* petrov::make_mtx(std::ifstream& in, size_t r, size_t c, char t, int* mtx)
+{
+  if (r == 0)
+  {
+    throw std::runtime_error("err");
+  }
+  if (t == '2')
+  {
+    mtx = reinterpret_cast<int*>(malloc(sizeof(int) * r * r));
+  }
+  try
+  {
+    petrov::fill_massive(r, c, in, mtx);
+  }
+  catch (...)
+  {
+    throw;
+  }
+  return mtx;
+}
+
+void petrov::count_diagonal(size_t r, size_t& s, size_t c, const int* mtx)
+{
+  size_t n = std::min(r, c), q = 0, i = 0, j = n - 1;
+  bool iszero = 1;
+  while (q < n - 1)
+  {
+    while (i < n - 1)
+    {
+      if (mtx[i * n + j] == 0)
+      {
+        iszero = 0;
+      }
+      i++;
+      j--;
+    }
+    q++, s += iszero, i = q, j = n - q - 1, iszero = 1;
+  }
+  i = n - 1, q = 0, j = 0, iszero = 1;
+  while (q < n - 1)
+  {
+    while (j < n - 1)
+    {
+      if (mtx[i * n + j] == 0)
+      {
+        iszero = 0;
+      }
+      j++, i--;
+    }
+    q++, s += iszero, i = n - 1 - q, j = q, iszero = 1;
+  }
+}
+
+void petrov::fll_inc_way(std::ofstream& ou, const int* mtx, size_t r, size_t c)
+{
+  size_t s = 0;
+  petrov::count_diagonal(r, s, c, mtx);
+  ou << s << "\n";
+}
+
+void petrov::write_output(std::ofstream& ou, size_t r, const int* mtx)
+{
+  ou << r << " " << r << " " << "\n";
+  for (size_t i = 0; i < r; ++i)
+  {
+    for (size_t j = 0; j < r; ++j)
+    {
+      ou << mtx[i * r + j] << " ";
+    }
+  }
+}
+
+void petrov::reform(size_t d, size_t r, int* mtx)
+{
+  while (d < r + 1)
+  {
     for (size_t i = 0; i < r; ++i)
     {
-      for (size_t j = 0; j < c; ++j)
+      for (size_t j = 0; j < r; ++j)
       {
-        if (!(in >> q))
+        if (i >= d - 1 && i < r - d + 1 && j >= d - 1 && j < r - d + 1)
         {
-          return false;
-        }
-        if (i < n && j < n)
-        {
-          mtx[i * n + j] = q;
+          mtx[i * r + j]++;
         }
       }
     }
-    return true;
+    d++;
   }
+}
 
-  void count_diagonal(size_t n, size_t& s, const int* mtx)
-  {
-    for (int k = 1 - (int)n; k <= (int)n - 1; ++k)
-    {
-      bool iszero = false;
-      size_t count = 0;
-      for (size_t i = 0; i < n; ++i)
-      {
-        int j = (int)i - k;
-        if (j >= 0 && j < (int)n)
-        {
-          count++;
-          if (mtx[i * n + j] == 0)
-          {
-            iszero = true;
-          }
-        }
-      }
-      if (count > 0 && !iszero)
-      {
-        s++;
-      }
-    }
-  }
-
-  void fll_inc_way(std::ofstream& ou, const int* mtx, size_t n)
-  {
-    size_t s = 0;
-    petrov::count_diagonal(n, s, mtx);
-    ou << s << "\n";
-  }
-
-  void write_output(std::ofstream& ou, size_t n, const int* mtx)
-  {
-    ou << n << " " << n << " " << "\n";
-    for (size_t i = 0; i < n; ++i)
-    {
-      for (size_t j = 0; j < n; ++j)
-      {
-        ou << mtx[i * n + j] << (j == n - 1 ? "" : " ");
-      }
-      ou << "\n";
-    }
-  }
-
-  void reform(size_t n, int* mtx)
-  {
-    size_t layers = (n + 1) / 2;
-    for (size_t d = 1; d <= layers; ++d)
-    {
-      for (size_t i = d - 1; i < n - d + 1; ++i)
-      {
-        for (size_t j = d - 1; j < n - d + 1; ++j)
-        {
-          mtx[i * n + j] += (int)d;
-        }
-      }
-    }
-  }
-
-  void cnt_nzr_dig(std::ofstream& ou, int* mtx, size_t n)
-  {
-    petrov::reform(n, mtx);
-    petrov::write_output(ou, n, mtx);
-  }
+void petrov::cnt_nzr_dig(std::ofstream& ou, int* mtx, size_t r, size_t c)
+{
+  r = std::min(r, c);
+  size_t d = 1;
+  reform(d, r, mtx);
+  write_output(ou, r, mtx);
 }
 
 int main(int argc, char** argv)
@@ -100,90 +143,56 @@ int main(int argc, char** argv)
     std::cerr << "Not enough arguments\n";
     return 1;
   }
-  if (argc > 4)
+  else if (argc > 4)
   {
     std::cerr << "Too many arguments\n";
     return 1;
   }
-
-  char type = argv[1][0];
-  if ((type != '1' && type != '2') || argv[1][1] != '\0')
+  if (!((argv[1][0] == '1' && argv[1][1] == '\0') || (argv[1][0] == '2' && argv[1][1] == '\0')))
   {
     std::cerr << "First parameter is out of range\n";
     return 1;
   }
-
-  std::ifstream in(argv[2]);
-  if (!in.is_open())
-  {
-    std::cerr << "Cannot open input file\n";
-    return 2;
-  }
-
   size_t rows = 0, cols = 0;
-  if (!(in >> rows >> cols))
+  std::ifstream in(argv[2]);
+  in >> rows >> cols;
+  if (in.fail())
   {
     std::cerr << "err\n";
     return 2;
   }
-
-  if (rows == 0 || cols == 0)
+  int statmtx[10000];
+  int* mtx = nullptr;
+  try
+  {
+    mtx = petrov::make_mtx(in, rows, cols, argv[1][0], &statmtx[0]);
+  }
+  catch (const std::runtime_error&)
   {
     return 0;
   }
-
-  size_t n = (rows < cols) ? rows : cols;
-  int statmtx[10000] = {0};
-  int* mtx = nullptr;
-
-  if (type == '1')
+  catch (...)
   {
-    if (n * n > 10000)
-    {
-      std::cerr << "Static array overflow\n";
-      return 2;
-    }
-    mtx = statmtx;
-  }
-  else
-  {
-    mtx = reinterpret_cast<int*>(std::malloc(sizeof(int) * n * n));
-    if (mtx == nullptr)
-    {
-      std::cerr << "Memory allocation failed\n";
-      return 2;
-    }
-  }
-
-  if (!petrov::fill_massive(rows, cols, in, mtx))
-  {
+    free(mtx);
     std::cerr << "err\n";
-    if (type == '2')
+    return 2;
+  }
+  if (in.fail())
+  {
+    if (argv[1][0] == '2')
     {
-      std::free(mtx);
+      free(mtx);
     }
+    std::cerr << "err\n";
     return 2;
   }
   in.close();
-
   std::ofstream ou(argv[3]);
-  if (!ou.is_open())
+  petrov::fll_inc_way(ou, (argv[1][0] == '1' ? statmtx : mtx), rows, cols);
+  petrov::cnt_nzr_dig(ou, (argv[1][0] == '1' ? statmtx : mtx), rows, cols);
+  if (argv[1][0] == '2')
   {
-    std::cerr << "Cannot open output file\n";
-    if (type == '2')
-    {
-      std::free(mtx);
-    }
-    return 2;
+    free(mtx);
   }
-
-  petrov::fll_inc_way(ou, mtx, n);
-  petrov::cnt_nzr_dig(ou, mtx, n);
-
-  if (type == '2')
-  {
-    std::free(mtx);
-  }
-
   return 0;
 }
