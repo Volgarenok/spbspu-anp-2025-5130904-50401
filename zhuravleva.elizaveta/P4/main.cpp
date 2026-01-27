@@ -156,13 +156,6 @@ int main()
     }
     return 1;
   }
-  if (zhuravleva::stringLength(secondString) == 0)
-  {
-    std::cerr << "Error: Empty string\n";
-    std::free(firstString);
-    std::free(secondString);
-    return 1;
-  }
 
   size_t max_len1 = zhuravleva::stringLength(firstString) + 1;
   size_t max_len2 = zhuravleva::stringLength(firstString) + 1;
