@@ -81,7 +81,7 @@ namespace zhuravleva{
     }
 
     char ch;
-    while (input >> ch && ch != '\n')
+    while (input.get(ch) && ch != '\n')
     {
       if (input.bad())
       {
@@ -136,6 +136,12 @@ int main()
     }
     return 1;
   }
+  if (zhuravleva::stringLength(firstString) == 0)
+  {
+    std::cerr << "Error: Empty string\n";
+    std::free(firstString);
+    return 1;
+  }
 
   size_t lenOfSecond = 0;
   char* secondString = nullptr;
@@ -148,6 +154,13 @@ int main()
     {
       std::free(secondString);
     }
+    return 1;
+  }
+  if (zhuravleva::stringLength(secondString) == 0)
+  {
+    std::cerr << "Error: Empty string\n";
+    std::free(firstString);
+    std::free(secondString);
     return 1;
   }
 
