@@ -1,10 +1,19 @@
 #include "composite_figure.hpp"
+#include <utility>
 
 void khasnulin::CompositeFigure::merge(const CompositeFigure &compFigure)
 {
   if (!isSameAddr(compFigure))
   {
-    figures.merge(compFigure.figures, compFigure.size());
+    figures.merge(compFigure.figures, figures.size());
+  }
+}
+
+void khasnulin::CompositeFigure::merge(CompositeFigure &&compFigure)
+{
+  if (!isSameAddr(compFigure))
+  {
+    figures.moveMerge(std::move(compFigure.figures), figures.size());
   }
 }
 

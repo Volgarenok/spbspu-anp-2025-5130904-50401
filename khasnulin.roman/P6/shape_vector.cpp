@@ -116,7 +116,7 @@ void khasnulin::CompositeFigure::ShapeVector::insert(const ShapeVector &vector, 
   }
 }
 
-void khasnulin::CompositeFigure::ShapeVector::moveInsert(ShapeVector &vector, size_t pos)
+void khasnulin::CompositeFigure::ShapeVector::moveInsert(ShapeVector &&vector, size_t pos)
 {
   insertPositionCheck(pos);
   shift(pos, vector.size());
@@ -128,7 +128,7 @@ void khasnulin::CompositeFigure::ShapeVector::moveInsert(ShapeVector &vector, si
   vector.size_ = 0;
 }
 
-void khasnulin::CompositeFigure::ShapeVector::insertPositionCheck(size_t pos)
+void khasnulin::CompositeFigure::ShapeVector::insertPositionCheck(size_t pos) const
 {
   if (pos > size_)
   {
@@ -209,7 +209,28 @@ void khasnulin::CompositeFigure::ShapeVector::merge(const ShapeVector &vector, s
   {
     throw std::out_of_range("trying to merge elements over array boundary");
   }
+  ShapeVector uniqFigures = getUniqs(vector);
+  insert(uniqFigures, pos);
+}
 
+void khasnulin::CompositeFigure::ShapeVector::moveMerge(ShapeVector &&vector, size_t pos)
+{
+  if (pos > size_)
+  {
+    throw std::out_of_range("trying to merge elements over array boundary");
+  }
+
+  ShapeVector uniqFigures = getUniqs(vector);
+  for (size_t i = 0; i < vector.size_; ++i)
+  {
+    vector.figures_[i] = nullptr;
+  }
+  moveInsert(std::move(uniqFigures), pos);
+}
+
+khasnulin::CompositeFigure::ShapeVector
+khasnulin::CompositeFigure::ShapeVector::getUniqs(const ShapeVector &vector) const
+{
   ShapeVector uniqFigures;
   for (size_t i = 0; i < vector.size_; ++i)
   {
@@ -218,11 +239,9 @@ void khasnulin::CompositeFigure::ShapeVector::merge(const ShapeVector &vector, s
       uniqFigures.insert(vector.figures_[i], uniqFigures.size());
     }
   }
-
-  insert(uniqFigures, pos);
 }
 
-int khasnulin::CompositeFigure::ShapeVector::find(IShape *figure)
+int khasnulin::CompositeFigure::ShapeVector::find(IShape *figure) const
 {
   for (size_t i = 0; i < size_; ++i)
   {

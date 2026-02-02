@@ -39,6 +39,7 @@ namespace khasnulin
     void merge(CompositeFigure &&compFig);
     CompositeFigure merge(const CompositeFigure &comFig) const;
     CompositeFigure merge(CompositeFigure &&comFig) const;
+
     void premerge(const CompositeFigure &compFigure);
     void mergeAt(const CompositeFigure &compFigure, size_t pos);
 
@@ -83,9 +84,10 @@ namespace khasnulin
 
       void insert(IShape *figure, size_t pos);
       void insert(const ShapeVector &vector, size_t pos);
-      void moveInsert(ShapeVector &vector, size_t pos);
+      void moveInsert(ShapeVector &&vector, size_t pos);
 
       void merge(const ShapeVector &vector, size_t pos);
+      void moveMerge(ShapeVector &&vector, size_t pos);
 
       void erase(size_t pos);
       size_t size() const noexcept;
@@ -104,8 +106,9 @@ namespace khasnulin
       void ensureCapacity(size_t newSize);
       void makeShapesByCapacity(size_t capacity);
       void shift(size_t pos, size_t size);
-      void insertPositionCheck(size_t pos);
-      int find(IShape *figure);
+      void insertPositionCheck(size_t pos) const;
+      int find(IShape *figure) const;
+      ShapeVector getUniqs(const ShapeVector &vector) const;
     };
 
     ShapeVector figures;

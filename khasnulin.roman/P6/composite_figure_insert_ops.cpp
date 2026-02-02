@@ -26,7 +26,7 @@ void khasnulin::CompositeFigure::preappend(CompositeFigure &&compFig)
   {
     throw std::runtime_error("can't preappend composite figure for itself by move");
   }
-  figures.moveInsert(compFig.figures, 0);
+  figures.moveInsert(std::move(compFig.figures), 0);
 }
 
 khasnulin::CompositeFigure khasnulin::CompositeFigure::preappend(const CompositeFigure &comFig) const
@@ -67,7 +67,7 @@ void khasnulin::CompositeFigure::append(CompositeFigure &&compFig)
   {
     throw std::runtime_error("can't append composite figure for itself by move");
   }
-  figures.moveInsert(compFig.figures, figures.size());
+  figures.moveInsert(std::move(compFig.figures), figures.size());
 }
 
 khasnulin::CompositeFigure khasnulin::CompositeFigure::append(const CompositeFigure &comFig) const
@@ -108,7 +108,7 @@ void khasnulin::CompositeFigure::add(CompositeFigure &&compFig, size_t pos)
   {
     throw std::invalid_argument("can't add composite figure for itself by move");
   }
-  figures.moveInsert(compFig.figures, pos);
+  figures.moveInsert(std::move(compFig.figures), pos);
 }
 
 khasnulin::CompositeFigure khasnulin::CompositeFigure::add(const CompositeFigure &comFig, size_t pos) const
