@@ -99,9 +99,20 @@ void khasnulin::CompositeFigure::ShapeVector::insert(const ShapeVector &vector, 
 {
   insertPositionCheck(pos);
   shift(pos, vector.size());
-  for (size_t i = pos, end = pos + vector.size(); i < end; ++i)
+  size_t inserted = 0;
+  try
   {
-    figures_[i] = vector[i - pos]->clone();
+    for (size_t i = pos, end = pos + vector.size(); i < end; ++i)
+    {
+      figures_[i] = vector[i - pos]->clone();
+      ++inserted;
+    }
+  }
+  // TODO: создавать буфер, сделать операцию shift в самом конце
+  catch (...)
+  {
+    clear();
+    throw;
   }
 }
 
@@ -124,6 +135,7 @@ void khasnulin::CompositeFigure::ShapeVector::insertPositionCheck(size_t pos)
     throw std::out_of_range("trying to insert elements over array boundary");
   }
 }
+
 void khasnulin::CompositeFigure::ShapeVector::ensureCapacity(size_t newSize)
 {
   size_t newCapacity = newSize > capacity_ * 2 ? newSize : capacity_ * 2;
@@ -189,4 +201,35 @@ void khasnulin::CompositeFigure::ShapeVector::changeCapacity(size_t newCapacity)
 size_t khasnulin::CompositeFigure::ShapeVector::getCapacity() const
 {
   return capacity_;
+}
+
+void khasnulin::CompositeFigure::ShapeVector::merge(const ShapeVector &vector, size_t pos)
+{
+  if (pos > size_)
+  {
+    throw std::out_of_range("trying to merge elements over array boundary");
+  }
+
+  ShapeVector uniqFigures;
+  for (size_t i = 0; i < vector.size_; ++i)
+  {
+    if (find(vector.figures_[i]) == -1)
+    {
+      uniqFigures.insert(vector.figures_[i], uniqFigures.size());
+    }
+  }
+
+  insert(uniqFigures, pos);
+}
+
+int khasnulin::CompositeFigure::ShapeVector::find(IShape *figure)
+{
+  for (size_t i = 0; i < size_; ++i)
+  {
+    if (figures_[i] == figure)
+    {
+      return i;
+    }
+  }
+  return -1;
 }
