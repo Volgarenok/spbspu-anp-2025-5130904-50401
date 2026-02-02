@@ -1,5 +1,5 @@
-#include "polygon.hpp"
-#include "point.hpp"
+#include <headers/point.hpp>
+#include <headers/polygon.hpp>
 #include <stdexcept>
 
 namespace

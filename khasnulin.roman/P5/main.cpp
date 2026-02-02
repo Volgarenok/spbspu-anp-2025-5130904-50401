@@ -1,7 +1,7 @@
 #include <cstring>
 #include <iostream>
 
-#include <figures.hpp>
+#include <headers/figures.hpp>
 
 int main()
 {

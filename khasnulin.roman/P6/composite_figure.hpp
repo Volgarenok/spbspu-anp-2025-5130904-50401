@@ -1,7 +1,7 @@
 #ifndef COMPOSITE_FIGURE_HPP
 #define COMPOSITE_FIGURE_HPP
 
-#include <ishape.hpp>
+#include <headers/ishape.hpp>
 
 namespace khasnulin
 {

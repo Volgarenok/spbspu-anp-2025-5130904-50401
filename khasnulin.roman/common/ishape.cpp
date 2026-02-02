@@ -1,5 +1,5 @@
 #include <cstring>
-#include <ishape.hpp>
+#include <headers/ishape.hpp>
 #include <stdexcept>
 
 void khasnulin::IShape::scale(double k)

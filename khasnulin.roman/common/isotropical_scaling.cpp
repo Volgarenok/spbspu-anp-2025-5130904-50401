@@ -1,4 +1,4 @@
-#include "isotropical_scaling.hpp"
+#include <headers/isotropical_scaling.hpp>
 
 void khasnulin::isotropicScaling(IShape &shape, point_t scale_pt, double scale)
 {

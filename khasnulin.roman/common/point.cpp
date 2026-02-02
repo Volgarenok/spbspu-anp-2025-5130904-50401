@@ -1,5 +1,5 @@
-#include "point.hpp"
 #include <cstddef>
+#include <headers/point.hpp>
 
 khasnulin::point_t khasnulin::operator-(point_t p_t1, point_t p_t2)
 {

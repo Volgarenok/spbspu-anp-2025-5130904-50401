@@ -1,4 +1,4 @@
-#include "utils.hpp"
+#include <headers/utils.hpp>
 #include <istream>
 
 void khasnulin::readScaleInfo(std::istream &in, point_t &scale_pt, double &scaleK)

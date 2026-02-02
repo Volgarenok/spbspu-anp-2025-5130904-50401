@@ -1,6 +1,6 @@
 #include "composite_figure.hpp"
 #include "composite_figure_utils.hpp"
-#include <figures.hpp>
+#include <headers/figures.hpp>
 #include <iostream>
 
 int main()

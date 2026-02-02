@@ -1,9 +1,5 @@
-#include "figures_info.hpp"
+#include <headers/figures_info.hpp>
 #include <iostream>
-
-namespace
-{
-}
 
 void khasnulin::printRectInfo(std::ostream &out, rectangle_t rect)
 {
