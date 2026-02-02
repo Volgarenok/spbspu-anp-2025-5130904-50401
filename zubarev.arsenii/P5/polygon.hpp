@@ -5,7 +5,7 @@
 #include "shape.hpp"
 namespace zubarev
 {
-  struct Polygon : Shape
+  struct Polygon: Shape
   {
     Polygon(const size_t size, const point_t* peaks);
     virtual ~Polygon();

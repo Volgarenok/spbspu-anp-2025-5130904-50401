@@ -4,7 +4,7 @@
 
 namespace zubarev
 {
-  struct Ring : Shape
+  struct Ring: Shape
   {
     Ring(double r1, double r2, const point_t& pos);
     virtual ~Ring() = default;

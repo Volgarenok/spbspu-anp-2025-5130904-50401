@@ -4,7 +4,7 @@
 
 namespace zubarev
 {
-  struct Rectangle : Shape
+  struct Rectangle: Shape
   {
     Rectangle(double width, double height, const point_t& pos);
     virtual ~Rectangle() = default;
