@@ -239,6 +239,7 @@ khasnulin::CompositeFigure::ShapeVector::getUniqs(const ShapeVector &vector) con
       uniqFigures.insert(vector.figures_[i], uniqFigures.size());
     }
   }
+  return uniqFigures;
 }
 
 int khasnulin::CompositeFigure::ShapeVector::find(IShape *figure) const
