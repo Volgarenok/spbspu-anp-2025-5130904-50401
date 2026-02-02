@@ -1,7 +1,7 @@
 #include "composite_figure_utils.hpp"
 
-#include <figures_info.hpp>
 #include <fstream>
+#include <headers/figures_info.hpp>
 
 void khasnulin::calculateAndPrintFiguresInfo(std::ostream &out, CompositeFigure &figures)
 {
