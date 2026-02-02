@@ -1,7 +1,7 @@
 #ifndef ISOTROPICAL_SCALING_HPP
 #define ISOTROPICAL_SCALING_HPP
 
-#include "ishape.hpp"
+#include <headers/shapes/ishape.hpp>
 
 namespace khasnulin
 {

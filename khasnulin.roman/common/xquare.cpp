@@ -1,4 +1,4 @@
-#include <headers/xquare.hpp>
+#include <headers/shapes/xquare.hpp>
 #include <stdexcept>
 
 khasnulin::Xquare::Xquare(point_t cent, double d):

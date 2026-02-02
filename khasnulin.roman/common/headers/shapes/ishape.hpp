@@ -15,6 +15,9 @@ namespace khasnulin
     virtual rectangle_t getFrameRect() const = 0;
     virtual void move(point_t to) = 0;
     virtual void move(double dx, double dy) = 0;
+
+    virtual IShape *clone() const = 0;
+
     void scale(double k);
 
   private:

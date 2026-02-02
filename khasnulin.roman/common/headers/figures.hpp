@@ -3,9 +3,9 @@
 
 #include "figures_info.hpp"
 #include "isotropical_scaling.hpp"
-#include "polygon.hpp"
-#include "rect.hpp"
 #include "utils.hpp"
-#include "xquare.hpp"
+#include <headers/shapes/polygon.hpp>
+#include <headers/shapes/rect.hpp>
+#include <headers/shapes/xquare.hpp>
 
 #endif

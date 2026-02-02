@@ -1,4 +1,4 @@
-#include <headers/rect.hpp>
+#include <headers/shapes/rect.hpp>
 #include <stdexcept>
 
 khasnulin::Rectangle::Rectangle(point_t pos, double w, double h):

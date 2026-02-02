@@ -1,7 +1,7 @@
 #ifndef UTILS_HPP
 #define UTILS_HPP
 
-#include "point.hpp"
+#include <headers/point.hpp>
 #include <iosfwd>
 
 namespace khasnulin

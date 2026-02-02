@@ -1,7 +1,7 @@
 #ifndef FRAME_RECT_HPP
 #define FRAME_RECT_HPP
 
-#include "point.hpp"
+#include <headers/point.hpp>
 
 namespace khasnulin
 {
