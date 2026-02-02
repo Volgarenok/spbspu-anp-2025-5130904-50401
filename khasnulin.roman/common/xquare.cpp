@@ -38,3 +38,8 @@ void khasnulin::Xquare::doScale(double k)
 {
   diag *= k;
 }
+
+khasnulin::IShape *khasnulin::Xquare::clone() const
+{
+  return new Xquare(*this);
+}

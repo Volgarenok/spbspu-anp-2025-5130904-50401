@@ -1,13 +1,14 @@
 #ifndef RECT_HPP
 #define RECT_HPP
 
-#include "ishape.hpp"
+#include <headers/shapes/ishape.hpp>
 
 namespace khasnulin
 {
   class Rectangle: public IShape
   {
   public:
+    Rectangle(const Rectangle &) = default;
     Rectangle(point_t pos, double w, double h);
 
     double getArea() const override;

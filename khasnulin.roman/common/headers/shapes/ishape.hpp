@@ -1,8 +1,8 @@
 #ifndef ISHAPE_HPP
 #define ISHAPE_HPP
 
-#include "frame_rect.hpp"
-#include "point.hpp"
+#include <headers/frame_rect.hpp>
+#include <headers/point.hpp>
 
 namespace khasnulin
 {

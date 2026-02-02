@@ -1,157 +1,6 @@
 #include "composite_figure.hpp"
 
-#include <algorithm>
-#include <cstddef>
 #include <stdexcept>
-
-namespace
-{
-  void copyShapes(khasnulin::IShape **from, khasnulin::IShape **to, size_t size) noexcept
-  {
-    for (size_t i = 0; i < size; i++)
-    {
-      to[i] = from[i];
-    }
-  }
-}
-
-khasnulin::CompositeFigure::ShapeVector::ShapeVector() noexcept:
-    size_(0),
-    capacity_(0),
-    figures_(nullptr)
-{
-}
-
-khasnulin::CompositeFigure::ShapeVector::ShapeVector(const ShapeVector &sv):
-    size_(sv.size_),
-    capacity_(sv.capacity_),
-    figures_(new IShape *[sv.capacity_])
-{
-  copyShapes(sv.figures_, figures_, size_);
-}
-
-khasnulin::CompositeFigure::ShapeVector::ShapeVector(ShapeVector &&sv) noexcept:
-    size_(sv.size_),
-    capacity_(sv.capacity_),
-    figures_(sv.figures_)
-{
-  sv.figures_ = nullptr;
-  sv.capacity_ = 0;
-  sv.size_ = 0;
-}
-
-khasnulin::CompositeFigure::ShapeVector &
-khasnulin::CompositeFigure::ShapeVector::operator=(const ShapeVector &sv)
-{
-  if (this == std::addressof(sv))
-  {
-    return *this;
-  }
-  IShape **newFigures = new IShape *[sv.capacity_];
-
-  copyShapes(sv.figures_, newFigures, sv.size_);
-  delete[] figures_;
-  figures_ = newFigures;
-  size_ = sv.size_;
-  capacity_ = sv.capacity_;
-  return *this;
-}
-
-khasnulin::CompositeFigure::ShapeVector &
-khasnulin::CompositeFigure::ShapeVector::operator=(ShapeVector &&sv) noexcept
-{
-  if (this == std::addressof(sv))
-  {
-    return *this;
-  }
-  std::swap(figures_, sv.figures_);
-  std::swap(size_, sv.size_);
-  std::swap(capacity_, sv.capacity_);
-  return *this;
-}
-
-khasnulin::CompositeFigure::ShapeVector::~ShapeVector()
-{
-  clear();
-  delete[] figures_;
-}
-
-size_t khasnulin::CompositeFigure::ShapeVector::size() const noexcept
-{
-  return size_;
-}
-
-khasnulin::IShape *khasnulin::CompositeFigure::ShapeVector::operator[](size_t index) const
-{
-  return figures_[index];
-}
-
-void khasnulin::CompositeFigure::ShapeVector::insert(IShape *figure, size_t pos)
-{
-  if (pos > size_)
-  {
-    throw std::out_of_range("trying to insert element over array boundary");
-  }
-  ensureCapacity(size_ + 1);
-  for (size_t i = size_; i > pos; --i)
-  {
-    figures_[i] = figures_[i - 1];
-  }
-  figures_[pos] = figure;
-  ++size_;
-}
-
-void khasnulin::CompositeFigure::ShapeVector::ensureCapacity(size_t newSize)
-{
-  size_t newCapacity = newSize > capacity_ * 2 ? newSize : capacity_ * 2;
-  makeShapesByCapacity(newCapacity);
-}
-
-bool khasnulin::CompositeFigure::ShapeVector::empty() const
-{
-  return !size_;
-}
-
-void khasnulin::CompositeFigure::ShapeVector::erase(size_t pos)
-{
-  if (pos >= size_)
-  {
-    throw std::out_of_range("trying to delete element over array boundary");
-  }
-  delete figures_[pos];
-  copyShapes(&figures_[pos + 1], &figures_[pos], size_ - pos - 1);
-  figures_[size_ - 1] = nullptr;
-  --size_;
-}
-
-void khasnulin::CompositeFigure::ShapeVector::clear()
-{
-  for (size_t i = 0; i < size_; i++)
-  {
-    delete figures_[i];
-  }
-  size_ = 0;
-}
-
-void khasnulin::CompositeFigure::ShapeVector::makeShapesByCapacity(size_t capacity)
-{
-  IShape **newFigures = new IShape *[capacity];
-  copyShapes(figures_, newFigures, size_);
-  delete[] figures_;
-  capacity_ = capacity;
-  figures_ = newFigures;
-}
-
-void khasnulin::CompositeFigure::ShapeVector::changeCapacity(size_t newCapacity)
-{
-  newCapacity = newCapacity > size_ ? newCapacity : size_;
-  makeShapesByCapacity(newCapacity);
-}
-
-size_t khasnulin::CompositeFigure::ShapeVector::getCapacity() const
-{
-  return capacity_;
-}
 
 void khasnulin::CompositeFigure::preappend(IShape *figure)
 {
@@ -160,6 +9,38 @@ void khasnulin::CompositeFigure::preappend(IShape *figure)
     throw std::invalid_argument("can't preappend figure, get nullptr instead of IShape pointer");
   }
   figures.insert(figure, 0);
+}
+
+void khasnulin::CompositeFigure::preappend(const CompositeFigure &compFig)
+{
+  if (isSameAddr(compFig))
+  {
+    throw std::runtime_error("can't preappend composite figure for itself by copy");
+  }
+  figures.insert(compFig.figures, 0);
+}
+
+void khasnulin::CompositeFigure::preappend(CompositeFigure &&compFig)
+{
+  if (isSameAddr(compFig))
+  {
+    throw std::runtime_error("can't preappend composite figure for itself by move");
+  }
+  figures.moveInsert(compFig.figures, 0);
+}
+
+khasnulin::CompositeFigure khasnulin::CompositeFigure::preappend(const CompositeFigure &comFig) const
+{
+  CompositeFigure newFigure = CompositeFigure(*this);
+  newFigure.preappend(comFig);
+  return newFigure;
+}
+
+khasnulin::CompositeFigure khasnulin::CompositeFigure::preappend(CompositeFigure &&comFig) const
+{
+  CompositeFigure newFigure = CompositeFigure(*this);
+  newFigure.preappend(std::move(comFig));
+  return newFigure;
 }
 
 void khasnulin::CompositeFigure::append(IShape *figure)
@@ -171,6 +52,38 @@ void khasnulin::CompositeFigure::append(IShape *figure)
   figures.insert(figure, figures.size());
 }
 
+void khasnulin::CompositeFigure::append(const CompositeFigure &compFig)
+{
+  if (isSameAddr(compFig))
+  {
+    throw std::runtime_error("can't append composite figure for itself by copy");
+  }
+  figures.insert(compFig.figures, figures.size());
+}
+
+void khasnulin::CompositeFigure::append(CompositeFigure &&compFig)
+{
+  if (isSameAddr(compFig))
+  {
+    throw std::runtime_error("can't append composite figure for itself by move");
+  }
+  figures.moveInsert(compFig.figures, figures.size());
+}
+
+khasnulin::CompositeFigure khasnulin::CompositeFigure::append(const CompositeFigure &comFig) const
+{
+  CompositeFigure newFigure = CompositeFigure(*this);
+  newFigure.append(comFig);
+  return newFigure;
+}
+
+khasnulin::CompositeFigure khasnulin::CompositeFigure::append(CompositeFigure &&comFig) const
+{
+  CompositeFigure newFigure = CompositeFigure(*this);
+  newFigure.append(std::move(comFig));
+  return newFigure;
+}
+
 void khasnulin::CompositeFigure::add(IShape *figure, size_t pos)
 {
   if (figure == nullptr)
@@ -178,6 +91,38 @@ void khasnulin::CompositeFigure::add(IShape *figure, size_t pos)
     throw std::invalid_argument("can't add figure, get nullptr instead of IShape pointer");
   }
   figures.insert(figure, pos);
+}
+
+void khasnulin::CompositeFigure::add(const CompositeFigure &compFig, size_t pos)
+{
+  if (isSameAddr(compFig))
+  {
+    throw std::invalid_argument("can't add composite figure for itself by copy");
+  }
+  figures.insert(compFig.figures, pos);
+}
+
+void khasnulin::CompositeFigure::add(CompositeFigure &&compFig, size_t pos)
+{
+  if (isSameAddr(compFig))
+  {
+    throw std::invalid_argument("can't add composite figure for itself by move");
+  }
+  figures.moveInsert(compFig.figures, pos);
+}
+
+khasnulin::CompositeFigure khasnulin::CompositeFigure::add(const CompositeFigure &comFig, size_t pos) const
+{
+  CompositeFigure newFigure = CompositeFigure(*this);
+  newFigure.add(comFig, pos);
+  return newFigure;
+}
+
+khasnulin::CompositeFigure khasnulin::CompositeFigure::add(CompositeFigure &&comFig, size_t pos) const
+{
+  CompositeFigure newFigure = CompositeFigure(*this);
+  newFigure.add(std::move(comFig), pos);
+  return newFigure;
 }
 
 khasnulin::IShape &khasnulin::CompositeFigure::last()
@@ -287,4 +232,9 @@ void khasnulin::CompositeFigure::shrink()
 size_t khasnulin::CompositeFigure::capacity() const
 {
   return figures.getCapacity();
+}
+
+bool khasnulin::CompositeFigure::isSameAddr(const CompositeFigure &compFig) const noexcept
+{
+  return this == std::addressof(compFig);
 }

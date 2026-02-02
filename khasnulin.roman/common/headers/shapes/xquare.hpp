@@ -8,6 +8,7 @@ namespace khasnulin
   class Xquare: public IShape
   {
   public:
+    Xquare(const Xquare &) = default;
     Xquare(point_t cent, double d);
 
     double getArea() const override;

@@ -148,3 +148,8 @@ void khasnulin::Polygon::doScale(double k)
     vertex[i] = center + delta * k;
   }
 }
+
+khasnulin::IShape *khasnulin::Polygon::clone() const
+{
+  return new Polygon(*this);
+}

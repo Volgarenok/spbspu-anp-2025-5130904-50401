@@ -41,3 +41,8 @@ void khasnulin::Rectangle::doScale(double k)
   rect.width *= k;
   rect.height *= k;
 }
+
+khasnulin::IShape *khasnulin::Rectangle::clone() const
+{
+  return new Rectangle(*this);
+}

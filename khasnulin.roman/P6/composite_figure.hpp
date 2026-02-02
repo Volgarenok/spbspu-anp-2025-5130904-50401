@@ -18,8 +18,22 @@ namespace khasnulin
     CompositeFigure &operator=(CompositeFigure &&cf) = default;
 
     void preappend(IShape *figure);
+    void preappend(const CompositeFigure &compFig);
+    void preappend(CompositeFigure &&compFig);
+    CompositeFigure preappend(const CompositeFigure &comFig) const;
+    CompositeFigure preappend(CompositeFigure &&comFig) const;
+
     void append(IShape *figure);
+    void append(const CompositeFigure &compFig);
+    void append(CompositeFigure &&compFig);
+    CompositeFigure append(const CompositeFigure &comFig) const;
+    CompositeFigure append(CompositeFigure &&comFig) const;
+
     void add(IShape *figure, size_t pos);
+    void add(const CompositeFigure &compFig, size_t pos);
+    void add(CompositeFigure &&compFig, size_t pos);
+    CompositeFigure add(const CompositeFigure &comFig, size_t pos) const;
+    CompositeFigure add(CompositeFigure &&comFig, size_t pos) const;
 
     IShape &last();
     IShape &first();
@@ -56,11 +70,13 @@ namespace khasnulin
 
       ShapeVector &operator=(const ShapeVector &sv);
       ShapeVector &operator=(ShapeVector &&sv) noexcept;
-      IShape *operator[](size_t index) const;
+      IShape *&operator[](size_t index) const;
 
       ~ShapeVector();
 
       void insert(IShape *figure, size_t pos);
+      void insert(const ShapeVector &vector, size_t pos);
+      void moveInsert(ShapeVector &vector, size_t pos);
       void erase(size_t pos);
       size_t size() const noexcept;
       bool empty() const;
@@ -77,9 +93,13 @@ namespace khasnulin
 
       void ensureCapacity(size_t newSize);
       void makeShapesByCapacity(size_t capacity);
+      void shift(size_t pos, size_t size);
+      void insertPositionCheck(size_t pos);
     };
 
     ShapeVector figures;
+
+    bool isSameAddr(const CompositeFigure &compFig) const noexcept;
   };
 }
 
