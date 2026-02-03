@@ -91,3 +91,15 @@ khasnulin::CompositeFigure khasnulin::CompositeFigure::mergeAt(CompositeFigure &
   newFig.mergeAt(std::move(comFig), pos);
   return newFig;
 }
+
+void khasnulin::CompositeFigure::merge()
+{
+  figures.merge();
+}
+
+khasnulin::CompositeFigure khasnulin::CompositeFigure::merge() const
+{
+  CompositeFigure newFigure(*this);
+  newFigure.merge();
+  return newFigure;
+}

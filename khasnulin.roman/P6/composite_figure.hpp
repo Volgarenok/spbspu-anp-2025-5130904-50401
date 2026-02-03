@@ -50,6 +50,9 @@ namespace khasnulin
     CompositeFigure mergeAt(const CompositeFigure &comFig, size_t pos) const;
     CompositeFigure mergeAt(CompositeFigure &&comFig, size_t pos) const;
 
+    void merge();
+    CompositeFigure merge() const;
+
     IShape &last();
     IShape &first();
     const IShape &last() const;
@@ -95,6 +98,8 @@ namespace khasnulin
 
       void merge(const ShapeVector &vector, size_t pos);
       void moveMerge(ShapeVector &&vector, size_t pos);
+
+      void merge();
 
       void erase(size_t pos);
       size_t size() const noexcept;

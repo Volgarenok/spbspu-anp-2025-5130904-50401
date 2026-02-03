@@ -253,3 +253,31 @@ int khasnulin::CompositeFigure::ShapeVector::find(IShape *figure) const
   }
   return -1;
 }
+
+void khasnulin::CompositeFigure::ShapeVector::merge()
+{
+  size_t firstDuplicatePos = 0;
+  for (size_t i = 0; i < size_; ++i)
+  {
+    bool isDupl = false;
+    for (size_t j = 0; j < i && !isDupl; ++j)
+    {
+      if (figures_[j] == figures_[i])
+      {
+        isDupl = true;
+      }
+    }
+
+    if (!isDupl)
+    {
+      figures_[firstDuplicatePos] = figures_[i];
+      ++firstDuplicatePos;
+    }
+  }
+
+  for (size_t i = firstDuplicatePos; i < size_; ++i)
+  {
+    figures_[i] = nullptr;
+  }
+  size_ = firstDuplicatePos;
+}
