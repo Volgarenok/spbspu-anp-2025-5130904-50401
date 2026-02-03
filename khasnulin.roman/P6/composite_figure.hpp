@@ -35,13 +35,20 @@ namespace khasnulin
     CompositeFigure add(const CompositeFigure &comFig, size_t pos) const;
     CompositeFigure add(CompositeFigure &&comFig, size_t pos) const;
 
-    void merge(const CompositeFigure &compFigure);
-    void merge(CompositeFigure &&compFig);
+    void merge(const CompositeFigure &comFig);
+    void merge(CompositeFigure &&comFig);
     CompositeFigure merge(const CompositeFigure &comFig) const;
     CompositeFigure merge(CompositeFigure &&comFig) const;
 
-    void premerge(const CompositeFigure &compFigure);
-    void mergeAt(const CompositeFigure &compFigure, size_t pos);
+    void premerge(const CompositeFigure &comFig);
+    void premerge(CompositeFigure &&comFig);
+    CompositeFigure premerge(const CompositeFigure &comFig) const;
+    CompositeFigure premerge(CompositeFigure &&comFig) const;
+
+    void mergeAt(const CompositeFigure &comFig, size_t pos);
+    void mergeAt(CompositeFigure &&comFig, size_t pos);
+    CompositeFigure mergeAt(const CompositeFigure &comFig, size_t pos) const;
+    CompositeFigure mergeAt(CompositeFigure &&comFig, size_t pos) const;
 
     IShape &last();
     IShape &first();
