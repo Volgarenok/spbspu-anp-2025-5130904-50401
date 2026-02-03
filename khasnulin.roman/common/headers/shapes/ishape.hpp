@@ -17,11 +17,11 @@ namespace khasnulin
     virtual void move(double dx, double dy) = 0;
 
     virtual IShape *clone() const = 0;
+    virtual const char *getShapeName() const = 0;
 
     void scale(double k);
 
   private:
-    virtual const char *getShapeName() const = 0;
     virtual void doScale(double k) = 0;
   };
 }

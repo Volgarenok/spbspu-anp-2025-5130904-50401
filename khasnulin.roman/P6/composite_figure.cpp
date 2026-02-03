@@ -1,5 +1,6 @@
 #include "composite_figure.hpp"
 
+#include <istream>
 #include <stdexcept>
 
 khasnulin::IShape &khasnulin::CompositeFigure::last()
@@ -114,4 +115,30 @@ size_t khasnulin::CompositeFigure::capacity() const
 bool khasnulin::CompositeFigure::isSameAddr(const CompositeFigure &compFig) const noexcept
 {
   return this == std::addressof(compFig);
+}
+
+void khasnulin::CompositeFigure::printFiguresArray(std::ostream &out)
+{
+  out << "[size]: " << figures.size() << "; [";
+  out.flush();
+  for (size_t i = 0, end = figures.size(); i < end; ++i)
+  {
+    if (figures[i] != nullptr)
+    {
+      out << " " << figures[i]->getShapeName();
+      out.flush();
+    }
+    else
+    {
+      out << " nullptr";
+      out.flush();
+    }
+    if (i != end - 1)
+    {
+      out << ", ";
+      out.flush();
+    }
+  }
+  out << " ]\n";
+  out.flush();
 }

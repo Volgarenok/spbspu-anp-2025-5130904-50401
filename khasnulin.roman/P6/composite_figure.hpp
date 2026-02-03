@@ -2,6 +2,7 @@
 #define COMPOSITE_FIGURE_HPP
 
 #include <headers/shapes/ishape.hpp>
+#include <iosfwd>
 
 namespace khasnulin
 {
@@ -77,6 +78,8 @@ namespace khasnulin
     void reserve(size_t newCapacity);
     void shrink();
     size_t capacity() const;
+
+    void printFiguresArray(std::ostream &out);
 
   private:
     class ShapeVector

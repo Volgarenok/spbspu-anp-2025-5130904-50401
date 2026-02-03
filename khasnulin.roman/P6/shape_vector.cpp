@@ -228,6 +228,10 @@ size_t khasnulin::CompositeFigure::ShapeVector::merge(const ShapeVector &vector,
   ShapeVector uniqFigures = getUniqs(vector);
   size_t eliminatedDuplicates = vector.size() - uniqFigures.size();
   insert(uniqFigures, pos);
+  for (size_t i = 0; i < uniqFigures.size_; ++i)
+  {
+    uniqFigures[i] = nullptr;
+  }
   return eliminatedDuplicates;
 }
 

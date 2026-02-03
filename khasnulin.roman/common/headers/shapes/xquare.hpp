@@ -16,10 +16,11 @@ namespace khasnulin
     void move(point_t to) override;
     void move(double dx, double dy) override;
 
+    const char *getShapeName() const override;
+
     IShape *clone() const override;
 
   private:
-    const char *getShapeName() const override;
     void doScale(double k) override;
     double diag;
     point_t center;

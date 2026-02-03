@@ -23,11 +23,11 @@ namespace khasnulin
     rectangle_t getFrameRect() const override;
     void move(point_t to) override;
     void move(double dx, double dy) override;
+    const char *getShapeName() const override;
 
     IShape *clone() const override;
 
   private:
-    const char *getShapeName() const override;
     void doScale(double k) override;
     point_t *vertex;
     size_t size;
