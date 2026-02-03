@@ -203,17 +203,19 @@ size_t khasnulin::CompositeFigure::ShapeVector::getCapacity() const
   return capacity_;
 }
 
-void khasnulin::CompositeFigure::ShapeVector::merge(const ShapeVector &vector, size_t pos)
+size_t khasnulin::CompositeFigure::ShapeVector::merge(const ShapeVector &vector, size_t pos)
 {
   if (pos > size_)
   {
     throw std::out_of_range("trying to merge elements over array boundary");
   }
   ShapeVector uniqFigures = getUniqs(vector);
+  size_t eliminatedDuplicates = vector.size() - uniqFigures.size();
   insert(uniqFigures, pos);
+  return eliminatedDuplicates;
 }
 
-void khasnulin::CompositeFigure::ShapeVector::moveMerge(ShapeVector &&vector, size_t pos)
+size_t khasnulin::CompositeFigure::ShapeVector::moveMerge(ShapeVector &&vector, size_t pos)
 {
   if (pos > size_)
   {
@@ -221,11 +223,13 @@ void khasnulin::CompositeFigure::ShapeVector::moveMerge(ShapeVector &&vector, si
   }
 
   ShapeVector uniqFigures = getUniqs(vector);
+  size_t eliminatedDuplicates = vector.size() - uniqFigures.size();
   for (size_t i = 0; i < vector.size_; ++i)
   {
     vector.figures_[i] = nullptr;
   }
   moveInsert(std::move(uniqFigures), pos);
+  return eliminatedDuplicates;
 }
 
 khasnulin::CompositeFigure::ShapeVector

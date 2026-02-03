@@ -1,20 +1,22 @@
 #include "composite_figure.hpp"
 #include <utility>
 
-void khasnulin::CompositeFigure::merge(const CompositeFigure &comFig)
+size_t khasnulin::CompositeFigure::merge(const CompositeFigure &comFig)
 {
   if (!isSameAddr(comFig))
   {
-    figures.merge(comFig.figures, figures.size());
+    return figures.merge(comFig.figures, figures.size());
   }
+  return 0;
 }
 
-void khasnulin::CompositeFigure::merge(CompositeFigure &&comFig)
+size_t khasnulin::CompositeFigure::merge(CompositeFigure &&comFig)
 {
   if (!isSameAddr(comFig))
   {
-    figures.moveMerge(std::move(comFig.figures), figures.size());
+    return figures.moveMerge(std::move(comFig.figures), figures.size());
   }
+  return 0;
 }
 
 khasnulin::CompositeFigure khasnulin::CompositeFigure::merge(const khasnulin::CompositeFigure &comFig) const
@@ -31,20 +33,22 @@ khasnulin::CompositeFigure khasnulin::CompositeFigure::merge(khasnulin::Composit
   return newFig;
 }
 
-void khasnulin::CompositeFigure::premerge(const CompositeFigure &comFig)
+size_t khasnulin::CompositeFigure::premerge(const CompositeFigure &comFig)
 {
   if (!isSameAddr(comFig))
   {
-    figures.merge(comFig.figures, 0);
+    return figures.merge(comFig.figures, 0);
   }
+  return 0;
 }
 
-void khasnulin::CompositeFigure::premerge(CompositeFigure &&comFig)
+size_t khasnulin::CompositeFigure::premerge(CompositeFigure &&comFig)
 {
   if (!isSameAddr(comFig))
   {
-    figures.moveMerge(std::move(comFig.figures), 0);
+    return figures.moveMerge(std::move(comFig.figures), 0);
   }
+  return 0;
 }
 
 khasnulin::CompositeFigure khasnulin::CompositeFigure::premerge(const CompositeFigure &comFig) const
@@ -61,20 +65,22 @@ khasnulin::CompositeFigure khasnulin::CompositeFigure::premerge(CompositeFigure 
   return newFig;
 }
 
-void khasnulin::CompositeFigure::mergeAt(const CompositeFigure &comFig, size_t pos)
+size_t khasnulin::CompositeFigure::mergeAt(const CompositeFigure &comFig, size_t pos)
 {
   if (!isSameAddr(comFig))
   {
-    figures.merge(comFig.figures, pos);
+    return figures.merge(comFig.figures, pos);
   }
+  return 0;
 }
 
-void khasnulin::CompositeFigure::mergeAt(CompositeFigure &&comFig, size_t pos)
+size_t khasnulin::CompositeFigure::mergeAt(CompositeFigure &&comFig, size_t pos)
 {
   if (!isSameAddr(comFig))
   {
-    figures.moveMerge(std::move(comFig.figures), pos);
+    return figures.moveMerge(std::move(comFig.figures), pos);
   }
+  return 0;
 }
 
 khasnulin::CompositeFigure khasnulin::CompositeFigure::mergeAt(const CompositeFigure &comFig,

@@ -35,18 +35,18 @@ namespace khasnulin
     CompositeFigure add(const CompositeFigure &comFig, size_t pos) const;
     CompositeFigure add(CompositeFigure &&comFig, size_t pos) const;
 
-    void merge(const CompositeFigure &comFig);
-    void merge(CompositeFigure &&comFig);
+    size_t merge(const CompositeFigure &comFig);
+    size_t merge(CompositeFigure &&comFig);
     CompositeFigure merge(const CompositeFigure &comFig) const;
     CompositeFigure merge(CompositeFigure &&comFig) const;
 
-    void premerge(const CompositeFigure &comFig);
-    void premerge(CompositeFigure &&comFig);
+    size_t premerge(const CompositeFigure &comFig);
+    size_t premerge(CompositeFigure &&comFig);
     CompositeFigure premerge(const CompositeFigure &comFig) const;
     CompositeFigure premerge(CompositeFigure &&comFig) const;
 
-    void mergeAt(const CompositeFigure &comFig, size_t pos);
-    void mergeAt(CompositeFigure &&comFig, size_t pos);
+    size_t mergeAt(const CompositeFigure &comFig, size_t pos);
+    size_t mergeAt(CompositeFigure &&comFig, size_t pos);
     CompositeFigure mergeAt(const CompositeFigure &comFig, size_t pos) const;
     CompositeFigure mergeAt(CompositeFigure &&comFig, size_t pos) const;
 
@@ -96,8 +96,8 @@ namespace khasnulin
       void insert(const ShapeVector &vector, size_t pos);
       void moveInsert(ShapeVector &&vector, size_t pos);
 
-      void merge(const ShapeVector &vector, size_t pos);
-      void moveMerge(ShapeVector &&vector, size_t pos);
+      size_t merge(const ShapeVector &vector, size_t pos);
+      size_t moveMerge(ShapeVector &&vector, size_t pos);
 
       void merge();
 
