@@ -16,7 +16,7 @@ void khasnulin::calculateAndPrintFiguresInfo(std::ostream &out, CompositeFigure 
   printGeneralInfo(out, general_frame, sum_area);
 }
 
-khasnulin::rectangle_t khasnulin::calculateFiguresGeneralRectangleFrame(CompositeFigure &figures)
+khasnulin::rectangle_t khasnulin::calculateFiguresGeneralRectangleFrame(const CompositeFigure &figures)
 {
   size_t size = figures.size();
   if (!size)

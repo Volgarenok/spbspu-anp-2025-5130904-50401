@@ -10,6 +10,7 @@ namespace
       to[i] = from[i];
     }
   }
+
 }
 
 khasnulin::CompositeFigure::ShapeVector::ShapeVector() noexcept:
@@ -20,11 +21,26 @@ khasnulin::CompositeFigure::ShapeVector::ShapeVector() noexcept:
 }
 
 khasnulin::CompositeFigure::ShapeVector::ShapeVector(const ShapeVector &sv):
-    size_(sv.size_),
+    size_(0),
     capacity_(sv.capacity_),
     figures_(new IShape *[sv.capacity_])
 {
-  copyShapes(sv.figures_, figures_, size_);
+  try
+  {
+    for (size_t i = 0; i < sv.size_; ++i)
+    {
+      figures_[i] = sv[i]->clone();
+      ++size_;
+    }
+  }
+  catch (...)
+  {
+    clear();
+    delete[] figures_;
+    size_ = 0;
+    capacity_ = 0;
+    throw;
+  }
 }
 
 khasnulin::CompositeFigure::ShapeVector::ShapeVector(ShapeVector &&sv) noexcept:

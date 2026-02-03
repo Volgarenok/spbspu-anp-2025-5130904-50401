@@ -7,7 +7,7 @@
 namespace khasnulin
 {
   void calculateAndPrintFiguresInfo(std::ostream &out, CompositeFigure &figures);
-  rectangle_t calculateFiguresGeneralRectangleFrame(CompositeFigure &figures);
+  rectangle_t calculateFiguresGeneralRectangleFrame(const CompositeFigure &figures);
 }
 
 #endif

@@ -21,7 +21,7 @@ namespace khasnulin
     void scale(double k);
 
   private:
-    const virtual char *getShapeName() const = 0;
+    virtual const char *getShapeName() const = 0;
     virtual void doScale(double k) = 0;
   };
 }
