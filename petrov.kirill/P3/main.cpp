@@ -48,14 +48,7 @@ int* petrov::make_mtx(std::ifstream& in, size_t r, size_t c, char t, int* mtx)
   {
     mtx = reinterpret_cast<int*>(malloc(sizeof(int) * r * r));
   }
-  try
-  {
-    petrov::fill_massive(r, c, in, mtx);
-  }
-  catch (...)
-  {
-    throw;
-  }
+  petrov::fill_massive(r, c, in, mtx);
   return mtx;
 }
 
