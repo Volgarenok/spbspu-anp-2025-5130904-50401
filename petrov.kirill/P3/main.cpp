@@ -5,18 +5,17 @@
 
 namespace petrov
 {
-  int* make_mtx(std::ifstream& in, size_t r, size_t c, char t, int* statmtx);
+  int* make_mtx(std::ifstream& in, size_t r, size_t c, char t, int* statmtx, int q);
   void fll_inc_way(std::ofstream& ou, const int* mtx, size_t r, size_t c);
   void cnt_nzr_dig(std::ofstream& ou, int* mtx, size_t r, size_t c);
   void write_output(std::ofstream& ou, size_t r, const int* mtx);
   void reform(size_t d, size_t r, int* mtx);
   void count_diagonal(size_t r, size_t& s, size_t c, const int* mtx);
-  void fill_massive(size_t r, size_t c, std::ifstream& in, int* mtx);
+  void fill_massive(size_t r, size_t c, std::ifstream& in, int* mtx, int q);
 }
 
-void petrov::fill_massive(size_t r, size_t c, std::ifstream& in, int* mtx)
+void petrov::fill_massive(size_t r, size_t c, std::ifstream& in, int* mtx, int q)
 {
-  int q;
   for (size_t i = 0; i < r; ++i)
   {
     for (size_t j = 0; j < c; ++j)
@@ -37,7 +36,7 @@ void petrov::fill_massive(size_t r, size_t c, std::ifstream& in, int* mtx)
   }
 }
 
-int* petrov::make_mtx(std::ifstream& in, size_t r, size_t c, char t, int* mtx)
+int* petrov::make_mtx(std::ifstream& in, size_t r, size_t c, char t, int* mtx, int q)
 {
   if (r == 0)
   {
@@ -47,7 +46,7 @@ int* petrov::make_mtx(std::ifstream& in, size_t r, size_t c, char t, int* mtx)
   {
     mtx = reinterpret_cast<int*>(malloc(sizeof(int) * r * r));
   }
-  petrov::fill_massive(r, c, in, mtx);
+  petrov::fill_massive(r, c, in, mtx, q);
   return mtx;
 }
 
@@ -153,11 +152,11 @@ int main(int argc, char** argv)
     std::cerr << "err\n";
     return 2;
   }
-  int statmtx[10000];
+  int statmtx[10000], q;
   int* mtx = nullptr;
   try
   {
-    mtx = petrov::make_mtx(in, rows, cols, argv[1][0], &statmtx[0]);
+    mtx = petrov::make_mtx(in, rows, cols, argv[1][0], &statmtx[0], q);
   }
   catch (const std::runtime_error&)
   {
