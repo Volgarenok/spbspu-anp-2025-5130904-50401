@@ -92,6 +92,7 @@ int main()
 {
   using namespace tarasenko;
   size_t n = 6;
+  int exit_code = 0;
   Shape** figures = nullptr;
   try
   {
@@ -114,14 +115,14 @@ int main()
     std::cout << "point: ";
     if (!(std::cin >> point.x >> point.y))
     {
-      std::cerr << "two floating point numbers expected\n";
-      return 1;
+      exit_code = 1;
+      throw std::runtime_error("two floating point numbers expected");
     };
     std::cout << "coefficient: ";
     if (!(std::cin >> coefficient))
     {
-      std::cerr << "floating point number expected\n";
-      return 1;
+      exit_code = 1;
+      throw std::runtime_error("floating point number expected");
     }
     scaleIsotropic(figures, n, point, coefficient);
     printFigures(figures, n);
@@ -130,16 +131,18 @@ int main()
       delete figures[i];
     }
     delete[] figures;
+    return exit_code;
   }
   catch (const std::exception &e)
   {
+    exit_code = 1;
     for (size_t i = 0; i < n; ++i)
     {
       delete figures[i];
     }
     delete[] figures;
     std::cerr << e.what() << "\n";
-    return 1;
+    return exit_code;
   }
 }
 
