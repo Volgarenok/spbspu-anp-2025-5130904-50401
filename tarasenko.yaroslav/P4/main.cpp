@@ -4,14 +4,6 @@
 
 namespace tarasenko
 {
-  void set_to_zero(char * string, size_t len)
-  {
-    for (size_t i = 0; i < len; ++i)
-    {
-      string[i] = '\0';
-    }
-  }
-
   bool is_vowel(char c)
   {
     return (c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u' || c == 'y');
@@ -38,15 +30,7 @@ namespace tarasenko
   {
     for (size_t i = 0; i < len; ++i)
     {
-      char current = string[i];
-      if (std::isupper(static_cast< unsigned char >(current)))
-      {
-        output[i] = std::tolower(current);
-      }
-      else
-      {
-        output[i] = string[i];
-      }
+      output[i] = std::tolower(string[i]);
     }
     output[len] = '\0';
   }
@@ -120,7 +104,6 @@ int main()
   }
   tarasenko::upp_to_low(string, output, len);
   std::cout << output << '\n';
-  tarasenko::set_to_zero(output, len + 1);
   tarasenko::remove_vowels(string, output, len);
   std::cout << output << '\n';
   delete[] output;
