@@ -19,9 +19,6 @@ namespace tarasenko
   void expandRect(point_t &, point_t &, rectangle_t);
   void printRect(rectangle_t);
 
-  point_t getPolygonCenter(point_t*, size_t);
-  double getSignedPolygonArea(point_t*, size_t);
-
   class Shape
   {
     public:
@@ -30,10 +27,12 @@ namespace tarasenko
       virtual rectangle_t getFrameRect() const = 0;
       virtual void move(point_t dest) = 0;
       virtual void move(double dx, double dy) = 0;
-      virtual void scale(double coeff) = 0;
+      void scale(double coeff);
+    private:
+      virtual void scaling(double coeff) = 0;
   };
 
-  class Rectangle: public Shape
+  class Rectangle final: public Shape
   {
     public:
       Rectangle(rectangle_t rect);
@@ -42,13 +41,13 @@ namespace tarasenko
       rectangle_t getFrameRect() const override;
       void move(point_t dest) override;
       void move(double dx, double dy) override;
-      void scale(double coeff) override;
     private:
+      void scaling(double coeff) override;
       double width, height;
       point_t center;
   };
 
-  class Square: public Shape
+  class Square final: public Shape
   {
     public:
       Square(rectangle_t rect);
@@ -57,23 +56,29 @@ namespace tarasenko
       rectangle_t getFrameRect() const override;
       void move(point_t dest) override;
       void move(double dx, double dy) override;
-      void scale(double coeff) override;
     private:
+      void scaling(double coeff) override;
       double size;
       point_t center;
   };
 
-  class Polygon: public Shape
+  class Polygon final: public Shape
   {
     public:
       ~Polygon() override;
-      Polygon(point_t* points, size_t len);
+      Polygon(const point_t* points, size_t len);
+      Polygon(const Polygon & poly);
+      Polygon &operator=(const Polygon & poly);
+      Polygon(Polygon && poly);
+      Polygon &operator=(Polygon && poly);
       double getArea() const override;
       rectangle_t getFrameRect() const override;
       void move(point_t dest) override;
       void move(double dx, double dy) override;
-      void scale(double coeff) override;
     private:
+      void scaling(double coeff) override;
+      point_t getPolygonCenter(const point_t*, size_t) const;
+      double getSignedPolygonArea(const point_t*, size_t) const;
       size_t length;
       point_t* vertices;
       point_t center;
@@ -87,37 +92,64 @@ int main()
 {
   using namespace tarasenko;
   size_t n = 6;
-  Shape** figures = new Shape*[n];
-  figures[0] = new Rectangle({6, 7, {11, 2}});
-  figures[1] = new Rectangle({1, 2}, {4, 7});
-  figures[2] = new Square({5, 2, {0, 0}});
-  figures[3] = new Square({2, -1}, 10);
-  point_t verts1[4] = {{0, 0}, {0, 5}, {7, 5}, {7, 0}};
-  figures[4] = new Polygon(verts1, 4);
-  point_t verts2[7] = {{-2, 2}, {-1, 5}, {2, 8}, {5, 7}, {6, 4}, {4, 1}, {0, 0}};
-  figures[5] = new Polygon(verts2, 7);
-  printFigures(figures, n);
-  point_t point = {0, 0};
-  double coefficient = 0;
-  std::cout << "point: ";
-  if (!(std::cin >> point.x >> point.y))
+  Shape** figures = nullptr;
+  try
   {
-    std::cerr << "two floating point numbers expected\n";
-    return 1;
-  };
-  std::cout << "coefficient: ";
-  if (!(std::cin >> coefficient))
+    figures = new Shape*[n];
+    for (size_t i = 0; i < n; ++i)
+    {
+      figures[i] = nullptr;
+    }
+    figures[0] = new Rectangle({6, 7, {11, 2}});
+    figures[1] = new Rectangle({1, 2}, {4, 7});
+    figures[2] = new Square({5, 2, {0, 0}});
+    figures[3] = new Square({2, -1}, 10);
+    point_t verts1[4] = {{0, 0}, {0, 5}, {7, 5}, {7, 0}};
+    figures[4] = new Polygon(verts1, 4);
+    point_t verts2[7] = {{-2, 2}, {-1, 5}, {2, 8}, {5, 7}, {6, 4}, {4, 1}, {0, 0}};
+    figures[5] = new Polygon(verts2, 7);
+    printFigures(figures, n);
+    point_t point = {0, 0};
+    double coefficient = 0;
+    std::cout << "point: ";
+    if (!(std::cin >> point.x >> point.y))
+    {
+      std::cerr << "two floating point numbers expected\n";
+      return 1;
+    };
+    std::cout << "coefficient: ";
+    if (!(std::cin >> coefficient))
+    {
+      std::cerr << "floating point number expected\n";
+      return 1;
+    }
+    scaleIsotropic(figures, n, point, coefficient);
+    printFigures(figures, n);
+    for (size_t i = 0; i < n; ++i)
+    {
+      delete figures[i];
+    }
+    delete[] figures;
+  }
+  catch (const std::exception &e)
   {
-    std::cerr << "floating point number expected\n";
+    for (size_t i = 0; i < n; ++i)
+    {
+      delete figures[i];
+    }
+    delete[] figures;
+    std::cerr << e.what() << "\n";
     return 1;
   }
-  if (coefficient < 0)
+}
+
+void tarasenko::Shape::scale(double coeff)
+{
+  if (coeff < 0.0)
   {
-    std::cerr << "coefficient must be non-negative\n";
-    return 1;
+    throw std::invalid_argument("scale coefficient must be positive");
   }
-  scaleIsotropic(figures, n, point, coefficient);
-  printFigures(figures, n);
+  scaling(coeff);
 }
 
 tarasenko::Rectangle::Rectangle(rectangle_t rect):
@@ -153,7 +185,7 @@ void tarasenko::Rectangle::move(double dx, double dy)
   center.y += dy;
 }
 
-void tarasenko::Rectangle::scale(double coeff)
+void tarasenko::Rectangle::scaling(double coeff)
 {
   width *= coeff;
   height *= coeff;
@@ -214,7 +246,7 @@ void tarasenko::Square::move(double dx, double dy)
   center.y += dy;
 }
 
-void tarasenko::Square::scale(double coeff)
+void tarasenko::Square::scaling(double coeff)
 {
   size *= coeff;
 }
@@ -224,7 +256,7 @@ tarasenko::Polygon::~Polygon()
   delete[] vertices;
 }
 
-tarasenko::Polygon::Polygon(point_t* points, size_t len):
+tarasenko::Polygon::Polygon(const point_t* points, size_t len):
   length(len)
 {
   if (len < 3)
@@ -237,6 +269,57 @@ tarasenko::Polygon::Polygon(point_t* points, size_t len):
     vertices[i] = points[i];
   }
   center = getPolygonCenter(vertices, len);
+}
+
+tarasenko::Polygon::Polygon(const Polygon & poly):
+  length(poly.length),
+  vertices(new point_t[poly.length]),
+  center(poly.center)
+{
+  for (size_t i = 0; i < length; ++i)
+  {
+    vertices[i] = poly.vertices[i];
+  }
+}
+
+tarasenko::Polygon & tarasenko::Polygon::operator=(const Polygon & poly)
+{
+  if (this == & poly)
+  {
+    return *this;
+  }
+  point_t * newVerts = new point_t[poly.length];
+  for (size_t i = 0; i < poly.length; ++i)
+  {
+    newVerts[i] = poly.vertices[i];
+  }
+  delete[] vertices;
+  vertices = newVerts;
+  length = poly.length;
+  center = poly.center;
+  return *this;
+}
+
+tarasenko::Polygon::Polygon(Polygon && poly):
+  length(poly.length),
+  vertices(poly.vertices),
+  center(poly.center)
+{
+  poly.vertices = nullptr;
+}
+
+tarasenko::Polygon & tarasenko::Polygon::operator=(Polygon && poly)
+{
+  if (this == & poly)
+  {
+    return *this;
+  }
+  delete[] vertices;
+  vertices = poly.vertices;
+  length = poly.length;
+  center = poly.center;
+  poly.vertices = nullptr;
+  return *this;
 }
 
 double tarasenko::Polygon::getArea() const
@@ -279,7 +362,7 @@ void tarasenko::Polygon::move(double dx, double dy)
   }
 }
 
-void tarasenko::Polygon::scale(double coeff)
+void tarasenko::Polygon::scaling(double coeff)
 {
   for (size_t i = 0; i < length; ++i)
   {
@@ -288,7 +371,7 @@ void tarasenko::Polygon::scale(double coeff)
   }
 }
 
-tarasenko::point_t tarasenko::getPolygonCenter(point_t* vert, size_t len)
+tarasenko::point_t tarasenko::Polygon::getPolygonCenter(const point_t* vert, size_t len) const
 {
   double x = 0;
   double y = 0;
@@ -307,7 +390,7 @@ tarasenko::point_t tarasenko::getPolygonCenter(point_t* vert, size_t len)
   return {x, y};
 }
 
-double tarasenko::getSignedPolygonArea(point_t* vert, size_t len)
+double tarasenko::Polygon::getSignedPolygonArea(const point_t* vert, size_t len) const
 {
   double area = 0;
   for (size_t i = 0; i < (len - 1); ++i)
