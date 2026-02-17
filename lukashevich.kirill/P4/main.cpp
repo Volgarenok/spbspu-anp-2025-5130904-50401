@@ -6,13 +6,7 @@
 namespace lukashevich {
   char* createStr(const size_t size)
   {
-    char* str = nullptr;
-    try {
-      str = new char[size];
-    } catch (const std::bad_alloc& e) {
-      std::cerr << "bad alloc\n";
-      return nullptr;
-    }
+    char* str = new char[size];
     return str;
   }
 
