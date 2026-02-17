@@ -1,16 +1,7 @@
-#include <iostream>
-#include <iomanip>
-#include <cctype>
+#include "input.hpp"
 
 namespace zubarev
 {
-  void pushOneElAmort(char** arr, size_t& size, size_t& capacity, char value);
-  void pushOneWordAmort(char*** arr, size_t& size, size_t& capacity, char* word);
-
-  bool isSpace(char letter);
-  char** getWords(std::istream& in, size_t& size, size_t& capacity, bool (*isSpace)(char ch));
-
-  std::ostream& outputMatrix(std::ostream& out, const char* const str, const size_t size);
   size_t strlen(const char* s);
   bool inStr(const char* const str, const char let);
   int solveSpliceStr(const char* mainStr, const char* secondStr, char* finalStr);
@@ -83,81 +74,6 @@ int main()
   }
 
   delete[] myWords;
-}
-
-void zubarev::pushOneElAmort(char** arr, size_t& size, size_t& capacity, char value)
-{
-  if (size + 1 >= capacity) {
-    capacity = (capacity == 0) ? 2 : capacity * 2;
-    char* newArr = new char[capacity];
-
-    for (size_t i = 0; i < size; i++) {
-      newArr[i] = (*arr)[i];
-    }
-
-    delete[] *arr;
-    *arr = newArr;
-  }
-  (*arr)[size] = value;
-  size++;
-}
-void zubarev::pushOneWordAmort(char*** arr, size_t& size, size_t& capacity, char* word)
-{
-  if (size + 1 >= capacity) {
-    capacity = (capacity == 0) ? 2 : capacity * 2;
-    char** newArr = new char*[capacity];
-
-    for (size_t i = 0; i < size; i++) {
-      newArr[i] = (*arr)[i];
-    }
-
-    delete[] *arr;
-    *arr = newArr;
-  }
-  (*arr)[size] = word;
-  size++;
-}
-char** zubarev::getWords(std::istream& in, size_t& size, size_t& capacity, bool (*isSpace)(char ch))
-{
-  char let = ' ';
-  char** data = nullptr;
-
-  bool is_skipws = in.flags() & std::ios_base::skipws;
-  if (is_skipws) {
-    in >> std::noskipws;
-  }
-
-  char* curData = nullptr;
-  size_t curSize = 0;
-  size_t curCapacity = 0;
-
-  while (in >> let && let != '\n') {
-
-    if (isSpace(let) && curSize > 0) {
-      pushOneElAmort(&curData, curSize, curCapacity, '\0');
-      pushOneWordAmort(&data, size, capacity, curData);
-      curData = nullptr;
-      curSize = 0;
-      curCapacity = 0;
-    } else if (!isSpace(let)) {
-      pushOneElAmort(&curData, curSize, curCapacity, let);
-    }
-  }
-
-  if (curSize > 0) {
-    pushOneElAmort(&curData, curSize, curCapacity, '\0');
-    pushOneWordAmort(&data, size, capacity, curData);
-  }
-
-  if (is_skipws) {
-    in >> std::skipws;
-  }
-
-  return data;
-}
-bool zubarev::isSpace(char letter)
-{
-  return letter == ' ';
 }
 
 size_t zubarev::strlen(const char* s)
