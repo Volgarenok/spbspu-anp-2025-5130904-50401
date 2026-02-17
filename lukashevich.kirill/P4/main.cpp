@@ -6,8 +6,7 @@
 namespace lukashevich {
   char* createStr(const size_t size)
   {
-    char* str = new char[size];
-    return str;
+    return new char[size];
   }
 
   size_t strLen(const char* str)
@@ -22,10 +21,6 @@ namespace lukashevich {
   char* updateStr(char* oldStr, const size_t oldSize)
   {
     char* newStr = createStr(oldSize * 2);
-    if (!newStr) {
-      delete[] oldStr;
-      return nullptr;
-    }
 
     for (size_t i = 0; i < oldSize; ++i) {
       newStr[i] = oldStr[i];
@@ -45,36 +40,23 @@ namespace lukashevich {
     size_t i = 0;
     size_t size = 8;
     char sym = 0;
-    char* str = createStr(size);
-    if (!str) {
-      if (isSkipws) {
-        in >> std::skipws;
-      }
-      return nullptr;
-    }
+    char* str = nullptr;
 
-    while (in >> sym && sym != '\n') {
-      if (i == size - 1) {
-        str = updateStr(str, size);
-        if (!str) {
-          if (isSkipws) {
-            in >> std::skipws;
-          }
-          return nullptr;
+    try {
+      str = createStr(size);
+
+      while (in >> sym && sym != '\n') {
+        if (i == size - 1) {
+          str = updateStr(str, size);
+          size *= 2;
         }
-        size *= 2;
+        str[i++] = sym;
       }
-      str[i++] = sym;
-    }
 
-    if (in.eof() && i == 0) {
+      if (in.eof() && i == 0) {
       delete[] str;
-      if (isSkipws) {
-        in >> std::skipws;
       }
-      std::cerr << "Error input\n";
-      return nullptr;
-    }
+    str = createStr(size);
 
     str[i++] = '\0';
 
@@ -82,6 +64,13 @@ namespace lukashevich {
       in >> std::skipws;
     }
     return str;
+    } catch(...) {
+    delete [] str;
+    if (isSkipws) {
+      in >> std::skipws;
+    }
+    throw;
+    }
   }
 
   int mergeLatinLetters(const char* str1, const char* str2, char* result, const int resultSize)
