@@ -1,15 +1,10 @@
 #include <iostream>
 #include <fstream>
 #include <memory>
-#include <cctype>
+#include "array_functions.hpp"
+#include "variants.hpp"
 
-namespace zharov
-{
-  std::istream & inputMatrix(std::istream & input, int * mtx, size_t rows, size_t cols);
-  bool isUppTriMtx(const int * mtx, size_t rows, size_t cols);
-  size_t getCntColNsm(const int * mtx, size_t rows, size_t cols);
-  void processMatrix(std::ifstream & input, int * matrix, size_t rows, size_t cols, const char * output_file);
-}
+
 
 int main(int argc, char ** argv)
 {
@@ -63,62 +58,4 @@ int main(int argc, char ** argv)
     return 2;
   }
 
-}
-
-std::istream & zharov::inputMatrix(std::istream & input, int * mtx, size_t rows, size_t cols)
-{
-  for (size_t i = 0; input && i < rows * cols; ++i) {
-    input >> mtx[i];
-  }
-  return input;
-}
-
-bool zharov::isUppTriMtx(const int * mtx, size_t rows, size_t cols)
-{
-  if (rows != cols) {
-    rows = std::min(rows, cols);
-    cols = rows;
-  }
-
-  if (rows == 0) {
-    return false;
-  }
-
-  for (size_t i = 0; i < rows; ++i) {
-    for (size_t j = 0; j < i; ++j) {
-      if (mtx[cols * i + j] != 0) {
-        return false;
-      }
-    }
-  }
-  return true;
-}
-
-size_t zharov::getCntColNsm(const int * mtx, size_t rows, size_t cols)
-{
-  if (rows == 0 || cols == 0) {
-    return 0;
-  }
-
-  size_t res = cols;
-  for (size_t i = 0; i < cols; ++i) {
-    for (size_t j = 1; j < rows; ++j) {
-      if (mtx[j * cols + i] == mtx[(j - 1) * cols + i]) {
-        --res;
-        break;
-      }
-    }
-  }
-  return res;
-}
-
-void zharov::processMatrix(std::ifstream & input, int * matrix, size_t rows, size_t cols, const char * output_file)
-{
-  zharov::inputMatrix(input, matrix, rows, cols);
-  if (input.fail()) {
-    return;
-  }
-  std::ofstream output(output_file);
-  output << zharov::isUppTriMtx(matrix, rows, cols) << "\n";
-  output << zharov::getCntColNsm(matrix, rows, cols) << "\n";
 }
