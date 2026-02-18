@@ -40,43 +40,43 @@ namespace lukashevich {
     size_t i = 0;
     size_t size = 8;
     char sym = 0;
-    char* str = nullptr;
+    char* str = createStr(size);
 
-    try {
-      str = createStr(size);
-
-      while (in >> sym && sym != '\n') {
-        if (i == size - 1) {
-          str = updateStr(str, size);
-          size *= 2;
-        }
-        str[i++] = sym;
+    while (in >> sym && sym != '\n') {
+      if (i == size - 1) {
+        str = updateStr(str, size);
+        size *= 2;
       }
+      str[i++] = sym;
+    }
 
-      if (in.eof() && i == 0) {
+    if (in.eof() && i == 0) {
       delete[] str;
+      if (isSkipws) {
+        in >> std::skipws;
       }
-    str = createStr(size);
-
-    str[i++] = '\0';
-
-    if (isSkipws) {
-      in >> std::skipws;
+      throw std::runtime_error("empty input");
     }
-    return str;
-    } catch(...) {
+
+    char* result = createStr(size + 1);
+    for (size_t j = 0; j < i; ++j) {
+      result[j] = str[j];
+    }
+    result[i] = '\0';
+
     delete [] str;
+
     if (isSkipws) {
       in >> std::skipws;
     }
-    throw;
-    }
+
+    return result;
   }
 
   int mergeLatinLetters(const char* str1, const char* str2, char* result, const int resultSize)
   {
     if (str1 == nullptr || str2 == nullptr || result == nullptr || resultSize <= 0) {
-      return -1;
+      throw std::invalid_argument("Argument are nullptr in func merge");
     }
 
     int letters[26] = {0};
@@ -105,7 +105,7 @@ namespace lukashevich {
     for (int i = 0; i < 26; ++i) {
       if (letters[i] == 1) {
         if (pos + 1 >= resultSize) {
-          return -1;
+          throw std::runtime_error("small buffer for func merge");
         }
         result[pos++] = static_cast< char >('a' + i);
       }
@@ -117,7 +117,7 @@ namespace lukashevich {
   int removeLatinLetters(const char* str, char* result, const int resultSize)
   {
     if (str == nullptr || result == nullptr || resultSize <= 0) {
-      return -1;
+      throw std::invalid_argument("argument are nullptr in func remove");
     }
 
     int pos = 0;
@@ -125,7 +125,7 @@ namespace lukashevich {
       const unsigned char c = str[i];
       if (!std::isalpha(c)) {
         if (pos + 1 >= resultSize) {
-          return -1;
+          throw std::runtime_error("small buffer for func merge");
         }
         result[pos++] = str[i];
       }
@@ -136,37 +136,27 @@ namespace lukashevich {
 
   char* latinLettersInStock(const char* str1, const char* str2)
   {
-    const int maxSize = 27;
-    char* result = createStr(maxSize);
-    if (!result) {
-      return nullptr;
+    if (str1 == nullptr || str2 == nullptr) {
+      throw std::invalid_argument("argument are nullptr in func latin");
     }
 
-    const int len = mergeLatinLetters(str1, str2, result, maxSize);
-    if (len < 0) {
-      delete[] result;
-      return nullptr;
-    }
+    const int maxSize = 27;
+    char* result = createStr(maxSize);
+
+    mergeLatinLetters(str1, str2, result, maxSize);
     return result;
   }
 
   char* latinRemove(const char* str)
   {
-    if (!str) {
-      return nullptr;
+    if (str == nullptr) {
+      throw std::invalid_argument("Null pointer in latinRemove");
     }
 
     const size_t size = strLen(str);
     char* result = createStr(size + 1);
-    if (!result) {
-      return nullptr;
-    }
 
-    const int len = removeLatinLetters(str, result, static_cast< int >(size + 1));
-    if (len < 0) {
-      delete[] result;
-      return nullptr;
-    }
+    removeLatinLetters(str, result, static_cast< int >(size + 1));
     return result;
   }
 }
@@ -174,27 +164,31 @@ namespace lukashevich {
 int main()
 {
   namespace luk = lukashevich;
+
+  char* str = nullptr;
+  char* resLatTwo = nullptr;
+  char* resLatRmv = nullptr;
+
+  try {
   char* str = luk::getLine(std::cin);
-  if (!str) {
-    std::cerr << "problem with input\n";
-    return 1;
-  }
-
   const char* secondWord = "def_ghk";
-  char* resLatTwo = luk::latinLettersInStock(str, secondWord);
-  char* resLatRmv = luk::latinRemove(str);
 
-  if (resLatTwo) {
-    std::cout << resLatTwo << "\n";
-  }
+  resLatTwo = luk::latinLettersInStock(str, secondWord);
+  resLatRmv = luk::latinRemove(str);
 
-  if (resLatRmv) {
-    std::cout << resLatRmv << "\n";
+  std::cout << resLatTwo << "\n";
+  std::cout << resLatRmv << "\n";
+  } catch (const std::exception& e) {
+    std::cerr << "Error: " << e.what() << "\n";
+
+    delete[] str;
+    delete[] resLatTwo;
+    delete[] resLatRmv;
+
+    return 1;
   }
 
   delete[] str;
   delete[] resLatTwo;
   delete[] resLatRmv;
-
-  return 0;
 }
