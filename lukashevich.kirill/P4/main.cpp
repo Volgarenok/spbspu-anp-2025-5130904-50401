@@ -58,7 +58,7 @@ namespace lukashevich {
       throw std::runtime_error("empty input");
     }
 
-    char* result = createStr(size + 1);
+    char* result = createStr(i + 1);
     for (size_t j = 0; j < i; ++j) {
       result[j] = str[j];
     }
@@ -170,7 +170,7 @@ int main()
   char* resLatRmv = nullptr;
 
   try {
-  char* str = luk::getLine(std::cin);
+  str = luk::getLine(std::cin);
   const char* secondWord = "def_ghk";
 
   resLatTwo = luk::latinLettersInStock(str, secondWord);
