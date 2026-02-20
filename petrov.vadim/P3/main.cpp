@@ -227,13 +227,9 @@ int main(int argc, char** argv)
   }
   else
   {
-    try
+    matrix1 = petrov::create_matrix(input, rows, cols);
+    if (!matrix1)
     {
-      matrix1 = petrov::create_matrix(input, rows, cols);
-    }
-    catch(const std::bad_alloc& e)
-    {
-      std::cerr << "matrix invalid\n";
       return 2;
     }
   }
