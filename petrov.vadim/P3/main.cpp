@@ -19,15 +19,7 @@ namespace petrov
 
 int* petrov::create_matrix(std::istream& in, size_t rows, size_t cols)
 {
-  int* mtx = nullptr;
-  try
-  {
-    mtx = new int[rows * cols]();
-  }
-  catch (const std::bad_alloc&)
-  {
-    return nullptr;
-  }
+  int* mtx = new int[rows * cols]();
 
   if (!petrov::fill(in, mtx, rows, cols))
   {
@@ -68,7 +60,7 @@ bool petrov::fill(std::istream& input, int* mtx, size_t rows, size_t cols)
   return true;
 }
 
-void petrov::vert_step_for_task1(int* mtx, size_t t, size_t b, size_t r, size_t l, size_t& step,bool mv_d,size_t cols)
+void petrov::vert_step_for_task1(int* mtx, size_t t, size_t b, size_t r, size_t l, size_t& step, bool mv_d, size_t cols)
 {
   if (mv_d)
   {
@@ -88,19 +80,14 @@ void petrov::vert_step_for_task1(int* mtx, size_t t, size_t b, size_t r, size_t 
 
 void petrov::hor_step_for_task1(int* mtx, size_t t, size_t b, size_t r, size_t l, size_t& step,bool mv_r, size_t cols)
 {
-  if (mv_r)
+  size_t starti= mv_r ? l : r + 1;
+  size_t row = mv_r ? b : t;
+  size_t endi = mv_r ? r : l;
+  size_t d = mv_r ? 1 : -1;
+
+  for (size_t i = starti; i != endi; i += d)
   {
-    for (size_t i = l; i <= r; ++i)
-    {
-      mtx[b * cols + i] += step++;
-    }
-  }
-  else
-  {
-    for (size_t i = r + 1; i-- > l;)
-    {
-      mtx[t * cols + i] += step++;
-    }
+    mtx[row * cols + i] +=  step++;
   }
 }
 
@@ -112,16 +99,26 @@ void petrov::lft_bot_cnt(std::ostream& output, int* mtx, size_t rows, size_t col
   while (top <= bottom && left <= right)
   {
     hor_step_for_task1(mtx, top, bottom, right, left, step, true, cols);
-    if (bottom-- == 0) break;
+    if (bottom-- == 0)
+    {
+      break;
+    }
 
     vert_step_for_task1(mtx, top, bottom, right, left, step, false, cols);
-    if (right-- == 0) break;
+    if (right-- == 0)
+    {
+      break;
+    }
 
     if (top <= bottom)
+    {
       hor_step_for_task1(mtx, top++, bottom, right, left, step, false, cols);
+    }
 
     if (left <= right)
+    {
       vert_step_for_task1(mtx, top, bottom, right, left++, step, true, cols);
+    }
   }
 
   fill_output(output, mtx, rows, cols);
@@ -230,19 +227,24 @@ int main(int argc, char** argv)
   }
   else
   {
-    matrix1 = petrov::create_matrix(input, rows, cols);
-  }
-
-  if (!matrix1)
-  {
-    std::cerr << "matrix invalid\n";
-    return 2;
+    try
+    {
+      matrix1 = petrov::create_matrix(input, rows, cols);
+    }
+    catch(const std::bad_alloc& e)
+    {
+      std::cerr << "matrix invalid\n";
+      return 2;
+    }
   }
 
   int* matrix2 = petrov::copy(matrix1, rows, cols);
   if (!matrix2)
   {
-    if (!allocated) delete[] matrix1;
+    if (!allocated)
+    {
+      delete[] matrix1;
+    }
     std::cerr << "memory allocation failed\n";
     return 2;
   }
