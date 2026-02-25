@@ -7,27 +7,13 @@ namespace kondrat
 {
   char * create_str(size_t size)
   {
-    char * str = nullptr;
-    try
-    {
-      str = new char[size];
-    }
-    catch (const std::bad_alloc & e)
-    {
-      std::cerr << "Memory allocation failed!\n";
-      return nullptr;
-    }
-    return str;
+    return new char[size];
   }
 
   char * expand_str(char * small_str, size_t small_size, size_t & size)
   {
     size_t new_size = size + 5;
     char * new_str = create_str(new_size);
-    if (!new_str)
-    {
-      return nullptr;
-    }
 
     for (size_t i = 0; i < small_size; ++i)
     {
@@ -49,15 +35,6 @@ namespace kondrat
 
     size_t cap = 5;
     char * buffer = create_str(cap);
-
-    if (!buffer)
-    {
-      if (is_skipws)
-      {
-        in >> std::skipws;
-      }
-      return nullptr;
-    }
 
     size = 0;
     char ch = 0;
@@ -93,15 +70,6 @@ namespace kondrat
       if (size >= cap - 1)
       {
         char * bigger = expand_str(buffer, size, cap);
-        if (!bigger)
-        {
-          delete[] buffer;
-          if (is_skipws)
-          {
-            in >> std::skipws;
-          }
-          return nullptr;
-        }
         buffer = bigger;
       }
 
@@ -194,33 +162,41 @@ namespace kondrat
 
 int main()
 {
-  size_t size = 0;
-  const char * second_str = "def_";
-  size_t second_len = kondrat::len_str(second_str);
+  char * str = nullptr;
+  char * result_uni_two = nullptr;
 
-  char * str = kondrat::getline(std::cin, size);
-  if (!str)
+  try
   {
-    std::cerr << "Failed to read input string\n";
-    return 1;
+    size_t size = 0;
+    const char * second_str = "def_";
+    size_t second_len = kondrat::len_str(second_str);
+
+    str = kondrat::getline(std::cin, size);
+    if (!str)
+    {
+      std::cerr << "Failed to read input string\n";
+      return 1;
+    }
+
+    size_t size_str_uni_two = size + second_len + 1;
+
+    result_uni_two = kondrat::create_str(size_str_uni_two);
+
+    int used_abc[52] = {};
+    kondrat::uni_two(str, second_str, result_uni_two);
+    size_t ans_dif_lat = kondrat::dif_lat(str, used_abc);
+
+    std::cout << result_uni_two << "\n";
+    std::cout << ans_dif_lat << "\n";
+
+    delete[] str;
+    delete[] result_uni_two;
   }
 
-  size_t size_str_uni_two = size + second_len + 1;
-
-  char * result_uni_two = kondrat::create_str(size_str_uni_two);
-  if (!result_uni_two)
+  catch (const std::bad_alloc &)
   {
     delete[] str;
+    delete[] result_uni_two;
     return 1;
   }
-
-  int used_abc[52] = {};
-  kondrat::uni_two(str, second_str, result_uni_two);
-  size_t ans_dif_lat = kondrat::dif_lat(str, used_abc);
-
-  std::cout << result_uni_two << "\n";
-  std::cout << ans_dif_lat << "\n";
-
-  delete[] str;
-  delete[] result_uni_two;
 }
