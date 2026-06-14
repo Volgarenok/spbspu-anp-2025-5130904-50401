@@ -1,7 +1,6 @@
 #include <iostream>
 #include <cstddef>
 #include <cctype>
-#include <iomanip>
 
 namespace kondrat
 {
@@ -10,7 +9,7 @@ namespace kondrat
     return new char[size];
   }
 
-  char * expand_str(char * small_str, size_t small_size, size_t & size)
+  char * expand_str(const char * small_str, size_t small_size, size_t & size)
   {
     size_t new_size = size + 5;
     char * new_str = create_str(new_size);
@@ -20,68 +19,59 @@ namespace kondrat
       new_str[i] = small_str[i];
     }
 
-    delete[] small_str;
     size = new_size;
     return new_str;
   }
 
   char * getline(std::istream & in, size_t & size)
   {
-    bool is_skipws = in.flags() & std::ios_base::skipws;
-    if (is_skipws)
-    {
-      in >> std::noskipws;
-    }
-
     size_t cap = 5;
     char * buffer = create_str(cap);
 
-    size = 0;
-    char ch = 0;
-
-    if (!in.get(ch))
+    try
     {
-      delete[] buffer;
-      if (is_skipws)
-      {
-        in >> std::skipws;
-      }
-      return nullptr;
-    }
-    if (ch == '\n')
-    {
-      delete[] buffer;
-      if (is_skipws)
-      {
-        in >> std::skipws;
-      }
-      return nullptr;
-    }
+      size = 0;
+      char ch = 0;
 
-    buffer[size++] = ch;
-
-    while (true)
-    {
-      if (!in.get(ch) || ch == '\n')
+      if (!in.get(ch))
       {
-        break;
+        delete[] buffer;
+        return nullptr;
       }
 
-      if (size >= cap - 1)
+      if (ch == '\n')
       {
-        char * bigger = expand_str(buffer, size, cap);
-        buffer = bigger;
+        buffer[size] = '\0';
+        return buffer;
       }
 
       buffer[size++] = ch;
+
+      while (true)
+      {
+        if (!in.get(ch) || ch == '\n')
+        {
+          break;
+        }
+
+        if (size >= cap - 1)
+        {
+          char * bigger = expand_str(buffer, size, cap);
+          delete[] buffer;
+          buffer = bigger;
+        }
+
+        buffer[size++] = ch;
+      }
+
+      buffer[size] = '\0';
     }
-
-    buffer[size] = '\0';
-
-    if (is_skipws)
+    catch (...)
     {
-      in >> std::skipws;
+      delete[] buffer;
+      throw;
     }
+
     return buffer;
   }
 
