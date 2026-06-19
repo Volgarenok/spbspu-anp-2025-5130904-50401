@@ -111,7 +111,7 @@ namespace lukashevich {
   size_t removeLatinLetters(const char* str, char* result, const size_t resultSize) noexcept
   {
     if (str == nullptr || result == nullptr || resultSize == 0) {
-      throw std::invalid_argument("argument are nullptr in func remove");
+      return 0;
     }
 
     size_t pos = 0;
