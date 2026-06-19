@@ -2,6 +2,9 @@
 #include <cstddef>
 #include <cctype>
 #include <iomanip>
+#include <cstring>
+#include <exception>
+#include <new>
 
 namespace lukashevich {
   char* createStr(const size_t size)
@@ -9,155 +12,126 @@ namespace lukashevich {
     return new char[size];
   }
 
-  size_t strLen(const char* str)
+  void copyChars(const char* source, char* destination, const size_t count) noexcept
   {
-    size_t l = 0;
-    while (str[l] != '\0') {
-      l++;
+    for (size_t i = 0; i < count; ++i) {
+      destination[i] = source[i];
     }
-    return l;
   }
 
-  char* updateStr(char* oldStr, const size_t oldSize)
+  int getLatinIndex(const unsigned char c) noexcept
   {
-    char* newStr = createStr(oldSize * 2);
-
-    for (size_t i = 0; i < oldSize; ++i) {
-      newStr[i] = oldStr[i];
+    if (std::isalpha(c) == 0) {
+      return -1;
     }
 
-    delete[] oldStr;
-    return newStr;
+    const int lower = std::tolower(c);
+    if (lower < 'a' || lower > 'z') {
+      return -1;
+    }
+
+    return lower - 'a';
+  }
+
+  void fillLatinTable(const char* str, int* letters) noexcept
+  {
+    if (str == nullptr || letters == nullptr) {
+      return;
+    }
+
+    for (size_t i = 0; str[i] != '\0'; ++i) {
+      const int index = getLatinIndex(static_cast< unsigned char >(str[i]));
+      if (index >= 0) {
+        letters[index] = 1;
+      }
+    }
   }
 
   char* getLine(std::istream& in)
   {
-    const bool isSkipws = in.flags() & std::ios_base::skipws;
-    if (isSkipws) {
-      in >> std::noskipws;
-    }
+    const std::ios_base::fmtflags flags = in.flags();
+    in >> std::noskipws;
 
-    size_t i = 0;
+    size_t pos = 0;
     size_t size = 8;
-    char sym = 0;
     char* str = createStr(size);
 
-    while (in >> sym && sym != '\n') {
-      if (i == size - 1) {
-        str = updateStr(str, size);
-        size *= 2;
-      }
-      str[i++] = sym;
-    }
+    try {
+      char sym = 0;
+      while (in >> sym && sym != '\n') {
+        if (pos + 1 == size) {
+          if (size > static_cast< size_t >(-1) / 2) {
+            throw std::bad_alloc();
+          }
 
-    if (in.eof() && i == 0) {
+          const size_t newSize = size * 2;
+          char* newStr = createStr(newSize);
+          copyChars(str, newStr, pos);
+          delete[] str;
+          str = newStr;
+          size = newSize;
+        }
+
+        str[pos] = sym;
+        ++pos;
+      }
+
+      str[pos] = '\0';
+      in.flags(flags);
+      return str;
+    } catch (...) {
       delete[] str;
-      if (isSkipws) {
-        in >> std::skipws;
-      }
-      throw std::runtime_error("empty input");
+      in.flags(flags);
+      throw;
     }
-
-    char* result = createStr(i + 1);
-    for (size_t j = 0; j < i; ++j) {
-      result[j] = str[j];
-    }
-    result[i] = '\0';
-
-    delete [] str;
-
-    if (isSkipws) {
-      in >> std::skipws;
-    }
-
-    return result;
   }
 
-  int mergeLatinLetters(const char* str1, const char* str2, char* result, const int resultSize)
+  size_t mergeLatinLetters(const char* str1, const char* str2, char* result, const size_t resultSize) noexcept
   {
-    if (str1 == nullptr || str2 == nullptr || result == nullptr || resultSize <= 0) {
-      throw std::invalid_argument("Argument are nullptr in func merge");
+    if (result == nullptr || resultSize == 0) {
+      return 0;
     }
 
     int letters[26] = {0};
+    fillLatinTable(str1, letters);
+    fillLatinTable(str2, letters);
 
-    for (size_t i = 0; str1[i] != '\0'; ++i) {
-      const unsigned char c = str1[i];
-      if (std::isalpha(c)) {
-        const int index = std::tolower(c) - 'a';
-        if (index >= 0 && index < 26) {
-          letters[index] = 1;
-        }
+    size_t pos = 0;
+    for (size_t i = 0; i < 26; ++i) {
+      if (letters[i] != 0 && pos + 1 < resultSize) {
+        result[pos] = static_cast< char >('a' + i);
+        ++pos;
       }
     }
 
-    for (size_t i = 0; str2[i] != '\0'; ++i) {
-      const unsigned char c = str2[i];
-      if (std::isalpha(c)) {
-        const int index = std::tolower(c) - 'a';
-        if (index >= 0 && index < 26) {
-          letters[index] = 1;
-        }
-      }
-    }
-
-    int pos = 0;
-    for (int i = 0; i < 26; ++i) {
-      if (letters[i] == 1) {
-        if (pos + 1 >= resultSize) {
-          throw std::runtime_error("small buffer for func merge");
-        }
-        result[pos++] = static_cast< char >('a' + i);
-      }
-    }
     result[pos] = '\0';
     return pos;
   }
 
-  int removeLatinLetters(const char* str, char* result, const int resultSize)
+  size_t removeLatinLetters(const char* str, char* result, const size_t resultSize) noexcept
   {
-    if (str == nullptr || result == nullptr || resultSize <= 0) {
+    if (str == nullptr || result == nullptr || resultSize == 0) {
       throw std::invalid_argument("argument are nullptr in func remove");
     }
 
-    int pos = 0;
+    size_t pos = 0;
     for (size_t i = 0; str[i] != '\0'; ++i) {
-      const unsigned char c = str[i];
-      if (!std::isalpha(c)) {
-        if (pos + 1 >= resultSize) {
-          throw std::runtime_error("small buffer for func merge");
-        }
-        result[pos++] = str[i];
+      const int index = getLatinIndex(static_cast< unsigned char >(str[i]));
+      if (index == -1 && pos + 1 < resultSize) {
+        result[pos] = str[i];
+        ++pos;
       }
     }
+
     result[pos] = '\0';
     return pos;
   }
 
-  char* latinLettersInStock(const char* str1, const char* str2)
+  void freeMemory(char* str, char* result1, char* result2) noexcept
   {
-    if (str1 == nullptr || str2 == nullptr) {
-      throw std::invalid_argument("argument are nullptr in func latin");
-    }
-
-    const int maxSize = 27;
-    char* result = createStr(maxSize);
-
-    mergeLatinLetters(str1, str2, result, maxSize);
-    return result;
-  }
-
-  char* latinRemove(const char* str)
-  {
-    if (str == nullptr) {
-      throw std::invalid_argument("Null pointer in latinRemove");
-    }
-
-    const size_t size = strLen(str);
-    char* result = createStr(size + 1);
-
-    removeLatinLetters(str, result, static_cast< int >(size + 1));
-    return result;
+    delete[] str;
+    delete[] result1;
+    delete[] result2;
   }
 }
 
@@ -170,25 +144,27 @@ int main()
   char* resLatRmv = nullptr;
 
   try {
-  str = luk::getLine(std::cin);
-  const char* secondWord = "def_ghk";
+    str = luk::getLine(std::cin);
 
-  resLatTwo = luk::latinLettersInStock(str, secondWord);
-  resLatRmv = luk::latinRemove(str);
+    const char* secondWord = "def_ghk";
+    const size_t latTwoSize = 27;
+    const size_t latRmvSize = std::strlen(str) + 1;
 
-  std::cout << resLatTwo << "\n";
-  std::cout << resLatRmv << "\n";
+    resLatTwo = luk::createStr(latTwoSize);
+    resLatRmv = luk::createStr(latRmvSize);
+
+    luk::mergeLatinLetters(str, secondWord, resLatTwo, latTwoSize);
+    luk::removeLatinLetters(str, resLatRmv, latRmvSize);
+
+    std::cout << resLatTwo << "\n";
+    std::cout << resLatRmv << "\n";
   } catch (const std::exception& e) {
     std::cerr << "Error: " << e.what() << "\n";
 
-    delete[] str;
-    delete[] resLatTwo;
-    delete[] resLatRmv;
-
+    luk::freeMemory(str, resLatTwo, resLatRmv);
     return 1;
   }
 
-  delete[] str;
-  delete[] resLatTwo;
-  delete[] resLatRmv;
+  luk::freeMemory(str, resLatTwo, resLatRmv);
+  return 0;
 }
