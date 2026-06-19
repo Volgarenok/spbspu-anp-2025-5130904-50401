@@ -55,10 +55,17 @@ namespace lukashevich {
     size_t pos = 0;
     size_t size = 8;
     char* str = createStr(size);
+    int hasInput = 0;
 
     try {
       char sym = 0;
-      while (in >> sym && sym != '\n') {
+      while (in >> sym) {
+        hasInput = 1;
+
+        if (sym == '\n') {
+        break;
+        }
+
         if (pos + 1 == size) {
           if (size > static_cast< size_t >(-1) / 2) {
             throw std::bad_alloc();
@@ -74,6 +81,10 @@ namespace lukashevich {
 
         str[pos] = sym;
         ++pos;
+      }
+
+      if (hasInput == 0 || in.bad()) {
+        throw std::runtime_error("input error");
       }
 
       str[pos] = '\0';
