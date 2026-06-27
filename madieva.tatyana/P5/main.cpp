@@ -43,7 +43,6 @@ namespace madieva {
     rectangle_t getFrameRect() override;
     void move(point_t a) override;
     void move(double dx, double dy) override;
-    void scale(double ratio) override;
     ~Bubble() = default;
   protected:
     void doScale(double ratio) override;
@@ -58,7 +57,6 @@ namespace madieva {
     rectangle_t getFrameRect() override;
     void move(point_t a) override;
     void move(double dx, double dy) override;
-    void scale(double ratio) override;
     ~Ring() = default;
   protected:
     void doScale(double ratio) override;
