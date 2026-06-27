@@ -15,8 +15,10 @@ namespace madieva {
     virtual rectangle_t getFrameRect() = 0;
     virtual void move(point_t a) = 0;
     virtual void move(double dx, double dy) = 0;
-    virtual void scale(double ratio) = 0;
+    void scale(double ratio);
     virtual ~Shape() = default;
+  protected:
+    virtual void doScale(double ratio) = 0;
   };
   class Rectangle: public Shape {
     double width_;
@@ -28,8 +30,9 @@ namespace madieva {
     rectangle_t getFrameRect() override;
     void move(point_t a) override;
     void move(double dx, double dy) override;
-    void scale(double ratio) override;
     ~Rectangle() = default;
+  protected:
+    void doScale(double ratio) override;
   };
   class Bubble: public Shape {
     double radius_;
@@ -42,6 +45,8 @@ namespace madieva {
     void move(double dx, double dy) override;
     void scale(double ratio) override;
     ~Bubble() = default;
+  protected:
+    void doScale(double ratio) override;
   };
   class Ring: public Shape {
     double big_radius_;
@@ -55,8 +60,17 @@ namespace madieva {
     void move(double dx, double dy) override;
     void scale(double ratio) override;
     ~Ring() = default;
+  protected:
+    void doScale(double ratio) override;
   };
+
   const double pi = 3.14;
+  void Shape::scale(double ratio) {
+    if (ratio <= 0) {
+      throw std::invalid_argument("bad argument k for shape");
+    }
+    doScale(ratio);
+  }
   Rectangle::Rectangle(double width, double height, point_t centre):
     Shape(),
     width_(width),
@@ -83,11 +97,8 @@ namespace madieva {
   {
     centre_ = {centre_.x + dx, centre_.y + dy};
   }
-  void Rectangle::scale(double ratio)
+  void Rectangle::doScale(double ratio)
   {
-    if (ratio <= 0) {
-      throw std::invalid_argument("bad argument k for rectangle");
-    }
     width_ = width_ * ratio;
     height_ = height_ * ratio;
   }
@@ -117,11 +128,8 @@ namespace madieva {
   {
     bottom_ = {bottom_.x + dx, bottom_.y + dy};
   }
-  void Bubble::scale(double ratio)
+  void Bubble::doScale(double ratio)
   {
-    if (ratio <= 0) {
-      throw std::invalid_argument("bad argument k for bubble");
-    }
     point_t centre{bottom_.x, bottom_.y + radius_};
     radius_ *= ratio;
     bottom_ = {centre.x, centre.y - radius_};
@@ -154,11 +162,8 @@ namespace madieva {
   {
     centre_ = {centre_.x + dx, centre_.y + dy};
   }
-  void Ring::scale(double ratio)
+  void Ring::doScale(double ratio)
   {
-    if (ratio <= 0) {
-      throw std::invalid_argument("bad argument k for ring");
-    }
     big_radius_ *= ratio;
     small_radius_ *= ratio;
   }
